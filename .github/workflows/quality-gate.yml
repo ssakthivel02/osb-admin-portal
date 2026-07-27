@@ -40,7 +40,20 @@ jobs:
         run: npm run lint
 
       - name: Type-check
-        run: npm run typecheck
+        shell: bash
+        run: |
+          mkdir -p quality-evidence
+          set -o pipefail
+          npm run typecheck 2>&1 | tee quality-evidence/typecheck.log
+
+      - name: Upload type-check evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: typecheck-evidence
+          path: quality-evidence/typecheck.log
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: Test
         run: npm run test
