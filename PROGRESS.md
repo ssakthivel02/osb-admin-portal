@@ -167,3 +167,65 @@ Inspect the first workflow run. Fix only the first evidenced failure, then gener
 CI QUALITY GATE COMMITTED
 
 VALIDATION RESULT PENDING — PRODUCTION READINESS REMAINS BLOCKED
+
+---
+
+## 2026-07-27 — CI dependency compatibility correction
+
+### Scope completed
+
+Inspected GitHub Actions run `30233734007` on `quality/ci-gate`. The job failed at `Install dependencies`; every later gate was skipped. The repository dependency matrix declared `typescript` `7.0.2` alongside `typescript-eslint` `8.65.0`.
+
+The supported peer range published by the typescript-eslint package family is TypeScript `>=4.8.4 <6.0.0`. The repository was therefore requesting an unsupported major version and could not establish a valid dependency graph.
+
+### Files changed
+
+- Updated `package.json` to pin TypeScript from `7.0.2` to `5.9.3`.
+- Updated this progress document with the failed-run evidence, correction, remaining blockers, and next action.
+
+### Evidence
+
+GitHub Actions evidence from run `30233734007`:
+
+- Checkout: passed.
+- Node setup: passed.
+- Install dependencies: failed.
+- Lint: skipped.
+- Type-check: skipped.
+- Test: skipped.
+- Build: skipped.
+- Artifact upload: skipped.
+
+Implementation commit:
+
+- `036c37fe668de411d67ee217cb5be1c49b7b3f44`
+
+Package compatibility evidence:
+
+- `typescript-eslint` `8.65.0` is the selected linting toolchain.
+- Its maintained v8 package line declares TypeScript support below major version 6.
+- TypeScript `5.9.3` is the latest compatible stable baseline selected for this repository.
+
+### Command evidence
+
+A local clean install could not be run because the execution environment could not resolve `github.com`. No local PASS result is claimed.
+
+The branch update will trigger a new GitHub Actions run. That run must be inspected before dependency installation or any later gate is considered successful.
+
+### Current blockers
+
+1. Dependency installation has not yet been revalidated after the TypeScript correction.
+2. No `package-lock.json` exists.
+3. Lint, type-check, tests, build, and artifact upload remain unproven.
+4. Authentication, API integration, and editorial workflows remain intentionally frozen.
+5. Production deployment remains prohibited.
+
+### Next task
+
+Inspect the new workflow run triggered by commit `036c37fe668de411d67ee217cb5be1c49b7b3f44`. Fix only the next evidenced failure. If dependency installation succeeds, generate and commit `package-lock.json`, switch CI to `npm ci`, and then continue through lint, type-check, tests, and build in order.
+
+### Status
+
+DEPENDENCY COMPATIBILITY CORRECTION COMMITTED
+
+REVALIDATION PENDING — PRODUCTION READINESS REMAINS BLOCKED
