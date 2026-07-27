@@ -1,0 +1,60 @@
+name: Quality Gate
+
+on:
+  pull_request:
+    branches:
+      - main
+      - audit/repository-baseline
+  push:
+    branches:
+      - audit/repository-baseline
+      - quality/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-gate-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Lint, type-check, test, and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.13.0'
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Verify generated lockfile is reproducible
+        run: git diff --exit-code -- package-lock.json
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type-check
+        run: npm run typecheck
+
+      - name: Test
+        run: npm run test
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload production build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: osb-admin-portal-dist
+          path: dist
+          if-no-files-found: error
+          retention-days: 7
