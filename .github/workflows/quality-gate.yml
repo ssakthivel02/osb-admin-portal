@@ -60,8 +60,20 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
 
-      - name: Test
-        run: npm run test
+      - name: Test with JUnit evidence
+        shell: bash
+        run: |
+          mkdir -p quality-evidence
+          npm run test:ci
+
+      - name: Upload test evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: test-evidence
+          path: quality-evidence/junit.xml
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: Build
         run: npm run build
