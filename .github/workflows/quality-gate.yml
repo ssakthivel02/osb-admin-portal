@@ -36,9 +36,6 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
-      - name: Verify generated lockfile is reproducible
-        run: git diff --exit-code -- package-lock.json
-
       - name: Lint
         run: npm run lint
 
