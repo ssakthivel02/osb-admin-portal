@@ -102,3 +102,68 @@ Add a minimal GitHub Actions quality-gate workflow that installs dependencies, g
 EXECUTABLE FOUNDATION COMMITTED
 
 VALIDATION PENDING — PRODUCTION READINESS REMAINS BLOCKED
+
+---
+
+## 2026-07-27 — GitHub Actions quality gate
+
+### Scope completed
+
+Created child branch `quality/ci-gate` from `audit/repository-baseline` and added the first executable CI quality gate without modifying `main` or production infrastructure.
+
+### Files changed
+
+- Added `.github/workflows/quality-gate.yml`.
+- Updated this progress log with the exact implementation and evidence status.
+
+### Controls introduced
+
+- Runs on pull requests targeting `main` or `audit/repository-baseline`.
+- Runs on pushes to `audit/repository-baseline` and `quality/**` branches.
+- Uses read-only repository permissions.
+- Uses Node.js `22.13.0`, matching the repository engine floor.
+- Runs dependency installation, lint, type-check, tests, and production build in a single bounded job.
+- Fails when the expected `dist` build output is absent.
+- Uploads the `dist` directory as a seven-day GitHub Actions artifact after a successful build.
+- Uses concurrency cancellation to avoid wasting runner capacity on superseded commits.
+- Uses a 15-minute job timeout to prevent stuck quality runs.
+
+### Evidence
+
+GitHub writes completed successfully:
+
+- Initial workflow commit: `1dc91f6d02593a04b41ade99677196ba2b76abca`
+- Corrected workflow commit: `4dbc4b1959c4d336f252f3bd478ab7ebeaa64023`
+
+The first draft included a lockfile reproducibility check that would have failed before lint and tests because no lockfile baseline exists. That check was removed deliberately so the first CI run can expose the actual application errors rather than stopping on a known repository-state issue.
+
+### Command evidence
+
+No CI result is claimed yet. The workflow has been committed, but a successful or failed GitHub Actions run must be inspected separately before any quality status is upgraded.
+
+Expected commands executed by the workflow:
+
+```bash
+npm install --no-audit --no-fund
+npm run lint
+npm run typecheck
+npm run test
+npm run build
+```
+
+### Current blockers
+
+1. No `package-lock.json`; installs are not yet fully reproducible.
+2. No inspected GitHub Actions run result for the new workflow.
+3. No proof yet that lint, type-check, tests, or build pass.
+4. Authentication, API contracts, and editorial workflows remain intentionally frozen.
+
+### Next task
+
+Inspect the first workflow run. Fix only the first evidenced failure, then generate and commit `package-lock.json` from a clean successful install. Do not add MSAL or business features until CI is green.
+
+### Status
+
+CI QUALITY GATE COMMITTED
+
+VALIDATION RESULT PENDING — PRODUCTION READINESS REMAINS BLOCKED
