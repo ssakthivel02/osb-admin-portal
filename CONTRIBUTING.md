@@ -25,10 +25,14 @@ Pull requests for remediation work must target `audit/repository-baseline`. A la
 
 ## Local prerequisites
 
-Use the runtime declared by the repository and validated by CI:
+The repository pins the CI-equivalent Node.js runtime in `.nvmrc`. GitHub Actions reads the same file, so local and CI setup must not maintain separate hard-coded runtime versions.
 
-- Node.js `22.13.0` for CI-equivalent evidence
-- npm `10.0.0` or later
+With a compatible Node Version Manager:
+
+```bash
+nvm install
+nvm use
+```
 
 Confirm the active versions:
 
@@ -37,7 +41,12 @@ node --version
 npm --version
 ```
 
-`package.json` permits Node.js `22.13.0` or later, but results intended to match the current Quality Gate should use Node.js `22.13.0`.
+Current expectations:
+
+- Node.js `22.13.0`, as declared by `.nvmrc`
+- npm `10.0.0` or later
+
+`package.json` permits Node.js `22.13.0` or later, but results intended to match the current Quality Gate must use the exact `.nvmrc` version. Changes to `.nvmrc`, the workflow runtime configuration, or the Node.js engine floor must be reviewed together.
 
 ## Dependency installation
 
