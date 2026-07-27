@@ -37,6 +37,10 @@ jobs:
       - name: Install dependencies from lockfile
         run: npm ci --no-audit --no-fund
 
+      - name: Verify lockfile remains unchanged
+        shell: bash
+        run: git diff --exit-code -- package-lock.json
+
       - name: Lint
         run: npm run lint
 
