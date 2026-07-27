@@ -25,9 +25,9 @@ Pull requests for remediation work must target `audit/repository-baseline`. A la
 
 ## Local prerequisites
 
-Use the versions declared by `package.json`:
+Use the runtime declared by the repository and validated by CI:
 
-- Node.js `22.13.0` or later compatible 22.x release
+- Node.js `22.13.0` for CI-equivalent evidence
 - npm `10.0.0` or later
 
 Confirm the active versions:
@@ -37,17 +37,19 @@ node --version
 npm --version
 ```
 
+`package.json` permits Node.js `22.13.0` or later, but results intended to match the current Quality Gate should use Node.js `22.13.0`.
+
 ## Dependency installation
 
-Once `package-lock.json` is committed, use the immutable installation command:
+The repository contains a committed `package-lock.json`. Use the immutable installation command:
 
 ```bash
 npm ci --no-audit --no-fund
 ```
 
-Do not regenerate or hand-edit the lockfile during unrelated changes. A lockfile change must be explained in the pull request and reviewed with the related `package.json` change.
+Do not use `npm install` for CI-equivalent validation. Do not regenerate or hand-edit the lockfile during unrelated changes. A lockfile change must be explained in the pull request and reviewed together with the related `package.json` change.
 
-The current quality branch may temporarily use `npm install --no-audit --no-fund` only while the validated lockfile candidate is being committed. This exception must be removed when the `npm ci` migration is complete.
+The Quality Gate verifies that `npm ci` leaves `package-lock.json` unchanged.
 
 ## Required quality checks
 
@@ -56,21 +58,25 @@ Run the same checks enforced by GitHub Actions:
 ```bash
 npm run lint
 npm run typecheck
-npm run test
+npm run test:ci
 npm run build
 ```
 
-Record the command results in the pull request or its linked progress document. A successful build does not override a failed lint, type-check, or test command.
+`npm run test` remains available for a concise local test run. `npm run test:ci` also creates machine-readable JUnit evidence at `quality-evidence/junit.xml`.
+
+Record command results in the pull request or its linked progress document. A successful build does not override a failed lint, type-check, or test command.
+
+Coverage reporting and a coverage threshold are not yet enforced. Do not infer source-code coverage from passing tests or JUnit output.
 
 ## GitHub Actions artifacts
 
-Quality Gate artifacts are evidence, not source files, except for an explicitly reviewed lockfile candidate.
+Current Quality Gate artifacts are evidence and must not be committed back into source control:
 
-- `package-lock-candidate`: extract and commit only `package-lock.json`, unchanged, to the approved quality branch.
-- `typecheck-evidence`: diagnostic log for review; do not commit unless a progress record requires a short, sanitised excerpt.
-- `osb-admin-portal-dist`: disposable build output for inspection; do not commit `dist/` to source control.
+- `typecheck-evidence`: diagnostic TypeScript output for review.
+- `test-evidence`: JUnit XML proving the executed test count and results; it does not measure source coverage.
+- `osb-admin-portal-dist`: disposable production-build output for inspection; do not commit `dist/`.
 
-Before using an artifact, confirm that it belongs to the expected workflow run, branch, and commit.
+Before using an artifact, confirm that it belongs to the expected workflow run, branch, and commit. Artifact retention is currently seven days.
 
 ## Commit format
 
