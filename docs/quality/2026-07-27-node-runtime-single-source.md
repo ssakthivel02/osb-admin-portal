@@ -65,7 +65,19 @@ instead of an independently hard-coded `node-version` value.
 
 No local command execution was available for this repository task. Evidence was obtained directly from repository files, pull-request metadata, and GitHub Actions metadata.
 
-The immediately preceding branch head passed Quality Gate run `30294957625` (run number 84). The new runtime-pin commits require their own completed Quality Gate result before they are described as CI-validated.
+Quality Gate run `30295435200` (run number 92) completed successfully for commit `036fefa9cece91533de63c71779b517971e4cedf`. The successful job included:
+
+- checkout;
+- Node.js setup from `.nvmrc`;
+- runtime-version recording;
+- immutable `npm ci` installation;
+- lockfile drift verification;
+- lint;
+- strict TypeScript type-check;
+- JUnit-producing tests and test-evidence upload;
+- production build and build-artifact upload.
+
+This validates the runtime single-source change and the complete configured scaffold quality sequence. It does not establish production readiness.
 
 ## Blockers and limitations
 
