@@ -229,3 +229,63 @@ Inspect the new workflow run triggered by commit `036c37fe668de411d67ee217cb5be1
 DEPENDENCY COMPATIBILITY CORRECTION COMMITTED
 
 REVALIDATION PENDING — PRODUCTION READINESS REMAINS BLOCKED
+
+---
+
+## 2026-07-27 — ESLint direct-dependency correction
+
+### Scope completed
+
+Inspected GitHub Actions run `30241464373` on `quality/ci-gate`. Dependency installation completed, but the lint step failed and all later gates were skipped.
+
+Repository inspection found that `eslint.config.js` directly imports `@eslint/js`, while `package.json` did not declare `@eslint/js` as a direct development dependency. Relying on a transitive package for a directly imported module makes the lint toolchain non-deterministic and can fail as the dependency graph changes.
+
+### Files changed
+
+- Updated `package.json` to add exact development dependency `@eslint/js` `10.0.1`.
+- Updated this progress document with the evidence, exact change, blockers, and next task.
+
+### Evidence
+
+GitHub Actions run `30241464373`:
+
+- Checkout: passed.
+- Node setup: passed.
+- Dependency installation: passed.
+- Lint: failed.
+- Type-check: skipped.
+- Test: skipped.
+- Build: skipped.
+- Artifact upload: skipped.
+
+Repository evidence:
+
+- `eslint.config.js` imports `@eslint/js`.
+- `package.json` previously omitted `@eslint/js` from `devDependencies`.
+- The official `@eslint/js` package documentation requires installing the plugin explicitly when it is imported by a flat ESLint configuration.
+
+Implementation commit:
+
+- `2571983652b15c1410a175d0e16604fb4e48f256`
+
+### Command evidence
+
+No local PASS result is claimed. The write operation succeeded, and the branch update should trigger a new GitHub Actions run. That run must be inspected before lint or any later gate is considered successful.
+
+### Current blockers
+
+1. The post-correction CI run has not yet been inspected.
+2. The exact remaining lint output, if any, must come from the new run rather than further speculative changes.
+3. No committed `package-lock.json` exists.
+4. Type-check, tests, build, and artifact generation remain unverified.
+5. Authentication, API integration, editorial workflows, and production deployment remain intentionally blocked.
+
+### Next task
+
+Inspect the workflow run triggered by commit `2571983652b15c1410a175d0e16604fb4e48f256`. If lint still fails, fix only the exact reported error. If lint passes, continue to the first evidenced failure in type-check, tests, or build. Generate and commit `package-lock.json` only after a clean dependency-install baseline is verified, then replace `npm install` with `npm ci`.
+
+### Status
+
+ESLINT DIRECT DEPENDENCY CORRECTION COMMITTED
+
+REVALIDATION PENDING — PRODUCTION READINESS REMAINS BLOCKED
