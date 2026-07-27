@@ -289,3 +289,73 @@ Inspect the workflow run triggered by commit `2571983652b15c1410a175d0e16604fb4e
 ESLINT DIRECT DEPENDENCY CORRECTION COMMITTED
 
 REVALIDATION PENDING — PRODUCTION READINESS REMAINS BLOCKED
+
+---
+
+## 2026-07-27 — Type-check ambient-type correction
+
+### Scope completed
+
+Inspected GitHub Actions run `30246021680` and downloaded the uploaded `typecheck-evidence` artifact. Dependency installation and lint both passed. Type-check failed with one exact diagnostic:
+
+```text
+node_modules/@testing-library/jest-dom/types/jest.d.ts(1,23): error TS2688: Cannot find type definition file for 'jest'.
+```
+
+The application uses Vitest, not Jest. `tsconfig.app.json` explicitly loaded `@testing-library/jest-dom` as an ambient type package, which caused TypeScript to include Jest-specific declarations even though the test environment already imports `@testing-library/jest-dom/vitest` through `src/test/setup.ts`.
+
+### Files changed
+
+- Updated `tsconfig.app.json` to remove `@testing-library/jest-dom` from `compilerOptions.types`.
+- Retained `vitest/globals` and all strict compiler controls.
+- Left `src/test/setup.ts` unchanged so Vitest-specific matcher augmentation remains explicit.
+- Updated this progress document with the exact failing command, diagnostic, correction, blockers, and next task.
+
+### Evidence
+
+GitHub Actions run `30246021680`:
+
+- Dependency installation: passed.
+- Lint: passed.
+- Type-check: failed.
+- Type-check evidence artifact upload: passed.
+- Tests: skipped.
+- Build: skipped.
+- Production artifact upload: skipped.
+
+Artifact evidence:
+
+- Artifact name: `typecheck-evidence`.
+- Artifact ID: `8645036450`.
+- Artifact digest: `sha256:826c53fb3fb428d1ddb681fb8fe287d7f46dbf885be72ff3889ca411a8d029a9`.
+
+Implementation commit:
+
+- `9a2db42b3a953ae36ac01bef9e74b3fcde2bea85`
+
+### Command evidence
+
+The exact failing command captured by CI was:
+
+```bash
+npm run typecheck
+```
+
+No type-check PASS is claimed. The branch update must trigger a new GitHub Actions run, and that run must be inspected before tests or build are considered available.
+
+### Current blockers
+
+1. Type-check has not yet been revalidated after the ambient-type correction.
+2. Tests and build have not executed successfully.
+3. No committed `package-lock.json` exists; installs remain non-reproducible.
+4. Authentication, API integration, editorial workflows, and production deployment remain intentionally blocked.
+
+### Next task
+
+Inspect the workflow run triggered by commit `9a2db42b3a953ae36ac01bef9e74b3fcde2bea85`. If type-check passes, address only the first evidenced test or build failure. Once the full gate is green, generate and commit `package-lock.json` from a clean install and switch CI from `npm install` to `npm ci`.
+
+### Status
+
+TYPE-CHECK AMBIENT-TYPE CORRECTION COMMITTED
+
+REVALIDATION PENDING — PRODUCTION READINESS REMAINS BLOCKED
