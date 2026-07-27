@@ -5,10 +5,13 @@ export default tseslint.config(
   {
     ignores: ['dist', 'coverage'],
   },
-  js.configs.recommended,
-  ...tseslint.configs.recommendedTypeChecked,
+  {
+    files: ['**/*.{js,mjs,cjs}'],
+    ...js.configs.recommended,
+  },
   {
     files: ['**/*.{ts,tsx}'],
+    extends: [...tseslint.configs.recommendedTypeChecked],
     languageOptions: {
       parserOptions: {
         projectService: true,
