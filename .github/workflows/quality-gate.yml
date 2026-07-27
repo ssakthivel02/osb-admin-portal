@@ -31,8 +31,13 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: '22.13.0'
+          node-version-file: '.nvmrc'
           cache: npm
+
+      - name: Record runtime versions
+        run: |
+          node --version
+          npm --version
 
       - name: Install dependencies from lockfile
         run: npm ci --no-audit --no-fund
