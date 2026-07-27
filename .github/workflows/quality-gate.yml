@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   validate:
-    name: Lint, type-check, test, and build
+    name: Lint, type-check, test, build, and audit
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -88,5 +88,20 @@ jobs:
         with:
           name: osb-admin-portal-dist
           path: dist
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Audit dependencies for high-severity findings
+        shell: bash
+        run: |
+          mkdir -p quality-evidence
+          npm audit --audit-level=high --json > quality-evidence/npm-audit.json
+
+      - name: Upload dependency audit evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: dependency-audit-evidence
+          path: quality-evidence/npm-audit.json
           if-no-files-found: error
           retention-days: 7
