@@ -1,23 +1,31 @@
+import { AudienceSection } from './components/AudienceSection';
+import { HeroSection } from './components/HeroSection';
+import { LearningTracksSection } from './components/LearningTracksSection';
+import { MasteryJourneySection } from './components/MasteryJourneySection';
+import { MetricStrip } from './components/MetricStrip';
+import { ProductConceptSection } from './components/ProductConceptSection';
+import { QuizStudioSection } from './components/QuizStudioSection';
+import { RepositoryStatus } from './components/RepositoryStatus';
+import { SiteFooter } from './components/SiteFooter';
+import { SiteHeader } from './components/SiteHeader';
+import { TrustSection } from './components/TrustSection';
+
 export function App() {
   return (
-    <main className="app-shell">
-      <section className="status-card" aria-labelledby="portal-title">
-        <p className="eyebrow">Verified implementation baseline</p>
-        <h1 id="portal-title">OmSaravanaBhava Admin Portal</h1>
-        <p>
-          The executable foundation is now present. Authentication, API access, and editorial workflows remain intentionally disabled until their contracts are verified.
-        </p>
-        <dl>
-          <div>
-            <dt>Repository state</dt>
-            <dd>Executable scaffold</dd>
-          </div>
-          <div>
-            <dt>Production state</dt>
-            <dd>Blocked pending quality gates</dd>
-          </div>
-        </dl>
-      </section>
-    </main>
+    <div className="site-shell" id="top">
+      <SiteHeader />
+      <main>
+        <HeroSection />
+        <MetricStrip />
+        <AudienceSection />
+        <LearningTracksSection />
+        <QuizStudioSection />
+        <MasteryJourneySection />
+        <ProductConceptSection />
+        <TrustSection />
+        <RepositoryStatus />
+      </main>
+      <SiteFooter />
+    </div>
   );
 }
