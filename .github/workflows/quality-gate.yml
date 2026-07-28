@@ -108,6 +108,18 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+      - name: Validate Siddhar reviewer identity and separation of duties
+        run: npm run check:siddhar-reviewers
+
+      - name: Upload Siddhar reviewer governance report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: siddhar-reviewer-governance-report
+          path: quality-evidence/siddhar-reviewer-governance.json
+          if-no-files-found: error
+          retention-days: 7
+
       - name: Lint
         shell: bash
         run: |
