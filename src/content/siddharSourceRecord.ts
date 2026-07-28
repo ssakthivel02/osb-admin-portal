@@ -137,20 +137,21 @@ export function validateSiddharSourceRecord(value: unknown): SiddharSourceRecord
   validateRequiredStrings(value, requiredRecordFields, 'record', errors);
 
   if (
-    !isNonEmptyString(value.status) ||
-    !SIDDHAR_EDITORIAL_STATUSES.includes(value.status as SiddharEditorialStatus)
+    !isNonEmptyString(value['status']) ||
+    !SIDDHAR_EDITORIAL_STATUSES.includes(value['status'] as SiddharEditorialStatus)
   ) {
     errors.push('record.status must use the approved editorial taxonomy');
   }
 
-  if (value.productionEligible !== false) {
+  if (value['productionEligible'] !== false) {
     errors.push('record.productionEligible must be false during intake');
   }
 
-  if (!Array.isArray(value.sourceReferences) || value.sourceReferences.length === 0) {
+  const sourceReferences = value['sourceReferences'];
+  if (!Array.isArray(sourceReferences) || sourceReferences.length === 0) {
     errors.push('record.sourceReferences must contain at least one evidence reference');
   } else {
-    value.sourceReferences.forEach((reference, index) => {
+    sourceReferences.forEach((reference, index) => {
       const prefix = `record.sourceReferences[${index}]`;
       if (!isObject(reference)) {
         errors.push(`${prefix} must be an object`);
@@ -158,31 +159,36 @@ export function validateSiddharSourceRecord(value: unknown): SiddharSourceRecord
       }
 
       validateRequiredStrings(reference, requiredReferenceFields, prefix, errors);
-      if (!isHttpUrl(reference.evidenceUrl)) {
+      if (!isHttpUrl(reference['evidenceUrl'])) {
         errors.push(`${prefix}.evidenceUrl must be an HTTP(S) URL`);
       }
-      if (!isIsoDate(reference.accessedOn)) {
+      if (!isIsoDate(reference['accessedOn'])) {
         errors.push(`${prefix}.accessedOn must use YYYY-MM-DD`);
       }
     });
   }
 
-  if (!isObject(value.review)) {
+  const review = value['review'];
+  if (!isObject(review)) {
     errors.push('record.review must be an object');
   } else {
-    validateRequiredStrings(value.review, requiredReviewFields, 'record.review', errors);
-    if (!isIsoDate(value.review.reviewedOn)) {
+    validateRequiredStrings(review, requiredReviewFields, 'record.review', errors);
+    if (!isIsoDate(review['reviewedOn'])) {
       errors.push('record.review.reviewedOn must use YYYY-MM-DD');
     }
   }
 
-  if (!isObject(value.rights)) {
+  const rights = value['rights'];
+  if (!isObject(rights)) {
     errors.push('record.rights must be an object');
   } else {
-    validateRequiredStrings(value.rights, requiredRightsFields, 'record.rights', errors);
+    validateRequiredStrings(rights, requiredRightsFields, 'record.rights', errors);
   }
 
-  if (value.status === 'CONTRADICTED_DO_NOT_PUBLISH' && value.productionEligible !== false) {
+  if (
+    value['status'] === 'CONTRADICTED_DO_NOT_PUBLISH' &&
+    value['productionEligible'] !== false
+  ) {
     errors.push('contradicted records can never be production eligible');
   }
 
