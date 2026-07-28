@@ -12,6 +12,8 @@ Every packet is non-production intake material. A packet must never:
 - contain credentials, private correspondence, unnecessary personal data, or medical instructions;
 - replace the preserved user-supplied devotional register.
 
+AI chat exports, research plans, generated code, search suggestions, synthetic reviewer identities, and unverified translations are working notes only. They are not archival witnesses, reviewer approvals, rights permissions, or completed evidence packets.
+
 ## Submission procedure
 
 1. Copy `../siddhar-evidence-submission-packet-template.json` into this directory.
@@ -23,7 +25,8 @@ Every packet is non-production intake material. A packet must never:
 7. Calculate SHA-256 for every file and record the exact byte size and MIME type.
 8. Keep all four declarations set to `true`.
 9. Run `npm run check:siddhar-submissions`.
-10. Submit the packet and source files for human review. Do not edit the canonical manifest status during intake.
+10. Run `npm run check:siddhar-files` to compare each declaration with the committed file bytes.
+11. Submit the packet and source files for human review. Do not edit the canonical manifest status during intake.
 
 ## Accepted evidence files
 
@@ -32,11 +35,13 @@ Every packet is non-production intake material. A packet must never:
 - PNG
 - TIFF
 
-Maximum file size is 100 MiB per file. The validator checks metadata and declared hashes; it does not prove that a file is authentic, complete, lawful to reuse, or correctly transcribed.
+Maximum file size is 100 MiB per file. The packet validator checks declared metadata. The file-integrity validator additionally checks that each path resolves inside the repository, exists as a regular non-symlink file, matches the declared byte size and SHA-256 digest, and has a PDF/JPEG/PNG/TIFF byte signature consistent with its extension and declared MIME type.
+
+Neither validator proves that a file is an authentic source, complete, correctly catalogued, legally reusable, or accurately transcribed.
 
 ## Manual review still required
 
-A successful validation result means only that the packet is structurally complete and safely linked to the evidence backlog. Qualified reviewers must still examine:
+A successful validation result means only that the packet is structurally complete, safely linked to the evidence backlog, and byte-consistent with the committed file. Qualified reviewers must still examine:
 
 - source identity and catalogue details;
 - folio, page, verse, and adjacent context;
