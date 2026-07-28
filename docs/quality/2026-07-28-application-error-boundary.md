@@ -1,7 +1,8 @@
 # Application Error Boundary Quality Record
 
 **Date:** 2026-07-28  
-**Branch:** `quality/error-boundary`  
+**Prepared branch:** `quality/error-boundary`  
+**Delivered branch:** `quality/ci-gate`  
 **Task:** Root-level render-failure containment and recovery UI  
 **Production infrastructure impact:** None
 
@@ -31,7 +32,8 @@ Added a typed React error boundary that:
 - states explicitly that no data was changed;
 - provides an explicit `Reload portal` recovery action;
 - does not expose stack traces, internal component names, secrets, or error details to the user;
-- preserves a focusable `main-content` landmark in the fallback state.
+- preserves a focusable `main-content` landmark in the fallback state;
+- satisfies the repository's `noImplicitOverride` control explicitly.
 
 ### `src/components/AppErrorBoundary.test.tsx`
 
@@ -56,14 +58,21 @@ Wrapped the application root in `AppErrorBoundary` while retaining `StrictMode`.
 - initial tests: `1151571d2371f624a3a57514c6965328f6a4ec2c`
 - deterministic test correction: `a5efe2f7aec7d3f29ef0a6d8e1d00fd357b7369e`
 - root integration: `9a5fec6b052382be2bc055324a1e3422c20a406e`
+- initial progress record: `ffeb18971dc91a7494432bd25c9bf380655697a9`
+- strict override correction: `8e8e666dcd5c4da6650219bedbf4703d22056141`
 
 ## Command and workflow evidence
 
-The branch update is configured to trigger the inherited Quality Gate and CodeQL workflows. At the time this record was created, GitHub had not yet returned workflow runs for the final implementation commit.
+The first Quality Gate run, `30327656012` (#171), failed at strict TypeScript type-checking. The exact diagnostics were `TS4114` for the overridden `state`, `componentDidCatch`, and `render` members because `noImplicitOverride` is enabled.
 
-No lint, type-check, test, build, audit, or CodeQL PASS is claimed until those workflow results are inspected.
+The implementation was corrected by adding explicit `override` modifiers. No compiler option was weakened or disabled.
 
-Expected inherited commands are:
+For corrected commit `8e8e666dcd5c4da6650219bedbf4703d22056141`:
+
+- Quality Gate run `30327730716` (#173): **success**;
+- CodeQL run `30327730705` (#67): **success**.
+
+The successful Quality Gate completed:
 
 ```bash
 npm ci --no-audit --no-fund
@@ -74,6 +83,10 @@ npm run test:ci
 npm run build
 npm audit --audit-level=high
 ```
+
+It also uploaded type-check evidence, JUnit test evidence, the production-build artifact, and dependency-audit evidence. CodeQL completed JavaScript and TypeScript analysis.
+
+No local shell PASS is claimed; executable evidence comes from GitHub Actions.
 
 ## Safety impact
 
@@ -100,5 +113,5 @@ Add a typed runtime configuration validator that fails closed when required publ
 ## Status
 
 ERROR BOUNDARY IMPLEMENTED  
-CI VALIDATION PENDING  
+STRICT TYPESCRIPT, TESTS, BUILD, AUDIT, AND CODEQL VERIFIED  
 PRODUCTION READINESS REMAINS BLOCKED
