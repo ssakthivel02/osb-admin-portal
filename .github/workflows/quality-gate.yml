@@ -96,6 +96,18 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+      - name: Validate Siddhar evidence orphan and coverage policy
+        run: npm run check:siddhar-coverage
+
+      - name: Upload Siddhar evidence coverage report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: siddhar-evidence-coverage-report
+          path: quality-evidence/siddhar-evidence-coverage.json
+          if-no-files-found: error
+          retention-days: 7
+
       - name: Lint
         shell: bash
         run: |
