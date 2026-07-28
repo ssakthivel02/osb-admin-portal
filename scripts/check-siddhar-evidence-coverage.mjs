@@ -21,11 +21,7 @@ const submissionsDirectory = resolve(
   repositoryRoot,
   'docs/content-intake/evidence/submissions',
 );
-const uploadsDirectory = resolve(repositoryRoot, 'docs/content-intake/evidence/uploads');
-const reportPath = resolve(
-  repositoryRoot,
-  'quality-evidence/siddhar-evidence-coverage.json',
-);
+const reportPath = resolve(repositoryRoot, 'quality-evidence/siddhar-evidence-coverage.json');
 const uploadPrefix = 'docs/content-intake/evidence/uploads/';
 const packetIdPattern = /^SID-SUB-\d{8}-\d{3}$/;
 
@@ -37,12 +33,12 @@ function isNonEmptyString(value) {
   return typeof value === 'string' && value.trim().length > 0;
 }
 
-function repositoryPath(root, absolutePath) {
+function toRepositoryPath(root, absolutePath) {
   return relative(root, absolutePath).replaceAll('\\', '/');
 }
 
-function isContainedPath(root, absolutePath) {
-  const relativePath = relative(root, absolutePath);
+function isInside(parent, child) {
+  const relativePath = relative(parent, child);
   return (
     relativePath !== '' &&
     relativePath !== '..' &&
@@ -55,21 +51,22 @@ function addIssue(issues, path, field, message, manifestItemId = null) {
   issues.push({ path, field, message, manifestItemId });
 }
 
-function parseManifest(manifest, issues) {
+function buildManifestMap(manifest, issues) {
   const items = new Map();
+  const path = 'docs/content-intake/evidence/siddhar-evidence-manifest.json';
   if (!isObject(manifest) || !Array.isArray(manifest.items)) {
-    addIssue(issues, 'docs/content-intake/evidence/siddhar-evidence-manifest.json', 'items', 'must be an array');
+    addIssue(issues, path, 'items', 'must be an array');
     return items;
   }
 
   for (const [index, item] of manifest.items.entries()) {
-    const path = `docs/content-intake/evidence/siddhar-evidence-manifest.json#items[${index}]`;
+    const itemPath = `${path}#items[${index}]`;
     if (!isObject(item) || !isNonEmptyString(item.id)) {
-      addIssue(issues, path, 'id', 'must be a non-empty manifest item ID');
+      addIssue(issues, itemPath, 'id', 'must be a non-empty manifest item ID');
       continue;
     }
     if (items.has(item.id)) {
-      addIssue(issues, path, 'id', 'must be unique');
+      addIssue(issues, itemPath, 'id', 'must be unique');
       continue;
     }
     items.set(item.id, item);
@@ -78,7 +75,7 @@ function parseManifest(manifest, issues) {
   return items;
 }
 
-function safeDeclaredPath(value) {
+function isSafeDeclaredPath(value, root) {
   if (
     !isNonEmptyString(value) ||
     !value.startsWith(uploadPrefix) ||
@@ -89,19 +86,18 @@ function safeDeclaredPath(value) {
     return false;
   }
 
-  const absolutePath = resolve(repositoryRoot, value);
-  return repositoryPath(repositoryRoot, absolutePath) === value;
+  return toRepositoryPath(root, resolve(root, value)) === value;
 }
 
-function scanUploadFiles({ root, contract, issues }) {
+function scanUploads(root, contract, issues) {
   const uploadsRoot = resolve(root, 'docs/content-intake/evidence/uploads');
   if (!existsSync(uploadsRoot)) {
     return [];
   }
 
-  let rootStats;
+  let uploadsStats;
   try {
-    rootStats = lstatSync(uploadsRoot);
+    uploadsStats = lstatSync(uploadsRoot);
   } catch (error) {
     addIssue(
       issues,
@@ -112,7 +108,7 @@ function scanUploadFiles({ root, contract, issues }) {
     return [];
   }
 
-  if (rootStats.isSymbolicLink()) {
+  if (uploadsStats.isSymbolicLink()) {
     addIssue(
       issues,
       'docs/content-intake/evidence/uploads',
@@ -121,7 +117,7 @@ function scanUploadFiles({ root, contract, issues }) {
     );
     return [];
   }
-  if (!rootStats.isDirectory()) {
+  if (!uploadsStats.isDirectory()) {
     addIssue(
       issues,
       'docs/content-intake/evidence/uploads',
@@ -131,9 +127,9 @@ function scanUploadFiles({ root, contract, issues }) {
     return [];
   }
 
-  const rootRealPath = realpathSync(root);
-  const uploadsRealPath = realpathSync(uploadsRoot);
-  if (!isContainedPath(rootRealPath, uploadsRealPath)) {
+  const rootReal = realpathSync(root);
+  const uploadsReal = realpathSync(uploadsRoot);
+  if (!isInside(rootReal, uploadsReal)) {
     addIssue(
       issues,
       'docs/content-intake/evidence/uploads',
@@ -144,14 +140,14 @@ function scanUploadFiles({ root, contract, issues }) {
   }
 
   const files = [];
-  function walk(directory) {
+  function visit(directory) {
     const entries = readdirSync(directory, { withFileTypes: true }).sort((left, right) =>
       left.name.localeCompare(right.name),
     );
 
     for (const entry of entries) {
       const absolutePath = resolve(directory, entry.name);
-      const path = repositoryPath(root, absolutePath);
+      const path = toRepositoryPath(root, absolutePath);
       let stats;
       try {
         stats = lstatSync(absolutePath);
@@ -170,7 +166,7 @@ function scanUploadFiles({ root, contract, issues }) {
         continue;
       }
       if (stats.isDirectory()) {
-        walk(absolutePath);
+        visit(absolutePath);
         continue;
       }
       if (!stats.isFile()) {
@@ -178,9 +174,9 @@ function scanUploadFiles({ root, contract, issues }) {
         continue;
       }
 
-      let realPath;
+      let resolvedFile;
       try {
-        realPath = realpathSync(absolutePath);
+        resolvedFile = realpathSync(absolutePath);
       } catch (error) {
         addIssue(
           issues,
@@ -190,30 +186,30 @@ function scanUploadFiles({ root, contract, issues }) {
         );
         continue;
       }
-      if (!isContainedPath(uploadsRealPath, realPath)) {
+      if (!isInside(uploadsReal, resolvedFile)) {
         addIssue(issues, path, 'path', 'upload file must resolve inside the controlled uploads directory');
         continue;
       }
 
-      const extension = extname(path).toLowerCase();
-      if (!contract.allowedFileExtensions.includes(extension)) {
+      if (!contract.allowedFileExtensions.includes(extname(path).toLowerCase())) {
         addIssue(issues, path, 'extension', 'is not an approved evidence extension');
       }
       files.push(path);
     }
   }
 
-  walk(uploadsRoot);
+  visit(uploadsRoot);
   return files.sort((left, right) => left.localeCompare(right));
 }
 
-function validatePacketFiles({ packetFiles, manifestItems, contract, issues }) {
-  const declarationsByPath = new Map();
+function collectValidPackets({ packetFiles, manifestItems, contract, root, issues }) {
   const packetIds = new Set();
+  const declarationsByPath = new Map();
   const validPackets = [];
 
-  for (const packetFile of [...packetFiles].sort((left, right) => left.path.localeCompare(right.path))) {
-    const startIssueCount = issues.length;
+  const sortedPackets = [...packetFiles].sort((left, right) => left.path.localeCompare(right.path));
+  for (const packetFile of sortedPackets) {
+    const initialIssueCount = issues.length;
     if (packetFile.parseError !== undefined) {
       addIssue(issues, packetFile.path, '(json)', `invalid JSON: ${packetFile.parseError}`);
       continue;
@@ -278,11 +274,11 @@ function validatePacketFiles({ packetFiles, manifestItems, contract, issues }) {
       );
     }
 
-    const pendingDeclarations = [];
+    const paths = [];
     if (Array.isArray(packet.files)) {
       for (const [index, declaration] of packet.files.entries()) {
         const field = `files[${index}].path`;
-        if (!isObject(declaration) || !safeDeclaredPath(declaration.path)) {
+        if (!isObject(declaration) || !isSafeDeclaredPath(declaration.path, root)) {
           addIssue(
             issues,
             packetFile.path,
@@ -292,8 +288,7 @@ function validatePacketFiles({ packetFiles, manifestItems, contract, issues }) {
           );
           continue;
         }
-        const extension = extname(declaration.path).toLowerCase();
-        if (!contract.allowedFileExtensions.includes(extension)) {
+        if (!contract.allowedFileExtensions.includes(extname(declaration.path).toLowerCase())) {
           addIssue(
             issues,
             packetFile.path,
@@ -302,32 +297,80 @@ function validatePacketFiles({ packetFiles, manifestItems, contract, issues }) {
             packet.manifestItemId,
           );
         }
-        pendingDeclarations.push(declaration.path);
+        paths.push(declaration.path);
       }
     }
 
-    if (issues.length !== startIssueCount || manifestItem === undefined) {
+    if (issues.length !== initialIssueCount || manifestItem === undefined) {
       continue;
     }
 
-    validPackets.push({
-      path: packetFile.path,
+    const validPacket = {
       packetId: packet.packetId,
+      packetPath: packetFile.path,
       manifestItemId: packet.manifestItemId,
-      files: pendingDeclarations,
-    });
-    for (const declarationPath of pendingDeclarations) {
-      const declarations = declarationsByPath.get(declarationPath) ?? [];
-      declarations.push({
-        packetId: packet.packetId,
-        packetPath: packetFile.path,
-        manifestItemId: packet.manifestItemId,
-      });
-      declarationsByPath.set(declarationPath, declarations);
+      paths,
+    };
+    validPackets.push(validPacket);
+    for (const path of paths) {
+      const declarations = declarationsByPath.get(path) ?? [];
+      declarations.push(validPacket);
+      declarationsByPath.set(path, declarations);
     }
   }
 
   return { declarationsByPath, validPackets };
+}
+
+function buildCoverageByManifestItem({ manifestItems, validPackets, uploadFileSet, declarationsByPath }) {
+  const summaries = new Map();
+  for (const packet of validPackets) {
+    const summary = summaries.get(packet.manifestItemId) ?? {
+      packetIds: new Set(),
+      declaredPaths: new Set(),
+      observedPaths: new Set(),
+    };
+    summary.packetIds.add(packet.packetId);
+    for (const path of packet.paths) {
+      summary.declaredPaths.add(path);
+      if (uploadFileSet.has(path) && (declarationsByPath.get(path) ?? []).length === 1) {
+        summary.observedPaths.add(path);
+      }
+    }
+    summaries.set(packet.manifestItemId, summary);
+  }
+
+  return [...manifestItems.values()]
+    .map((item) => {
+      const summary = summaries.get(item.id) ?? {
+        packetIds: new Set(),
+        declaredPaths: new Set(),
+        observedPaths: new Set(),
+      };
+      let coverageState = 'NO_PACKET';
+      if (summary.packetIds.size > 0 && summary.declaredPaths.size === 0) {
+        coverageState = 'PACKET_WITHOUT_FILES';
+      } else if (summary.declaredPaths.size > 0 && summary.observedPaths.size === 0) {
+        coverageState = 'FILES_MISSING';
+      } else if (summary.observedPaths.size < summary.declaredPaths.size) {
+        coverageState = 'PARTIAL';
+      } else if (summary.declaredPaths.size > 0) {
+        coverageState = 'COVERED';
+      }
+
+      return {
+        manifestItemId: item.id,
+        siddhar: item.siddhar,
+        itemTitle: item.itemTitle,
+        priority: item.priority,
+        status: item.status,
+        packetCount: summary.packetIds.size,
+        declaredFileCount: summary.declaredPaths.size,
+        observedFileCount: summary.observedPaths.size,
+        coverageState,
+      };
+    })
+    .sort((left, right) => left.manifestItemId.localeCompare(right.manifestItemId));
 }
 
 export function validateSiddharEvidenceCoverage({
@@ -337,16 +380,13 @@ export function validateSiddharEvidenceCoverage({
   contract = SIDDHAR_EVIDENCE_SUBMISSION_CONTRACT,
 }) {
   const issues = [];
-  const manifestItems = parseManifest(manifest, issues);
-  const uploadFiles = scanUploadFiles({
-    root: repositoryRootPath,
-    contract,
-    issues,
-  });
-  const { declarationsByPath, validPackets } = validatePacketFiles({
+  const manifestItems = buildManifestMap(manifest, issues);
+  const uploadFiles = scanUploads(repositoryRootPath, contract, issues);
+  const { declarationsByPath, validPackets } = collectValidPackets({
     packetFiles,
     manifestItems,
     contract,
+    root: repositoryRootPath,
     issues,
   });
 
@@ -371,9 +411,10 @@ export function validateSiddharEvidenceCoverage({
     }
   }
 
-  for (const [declaredPath, declarations] of [...declarationsByPath.entries()].sort(([left], [right]) =>
+  const sortedDeclarations = [...declarationsByPath.entries()].sort(([left], [right]) =>
     left.localeCompare(right),
-  )) {
+  );
+  for (const [declaredPath, declarations] of sortedDeclarations) {
     if (!uploadFileSet.has(declaredPath)) {
       missingDeclaredFileCount += 1;
       addIssue(
@@ -395,61 +436,12 @@ export function validateSiddharEvidenceCoverage({
     }
   }
 
-  const packetCoverage = new Map();
-  for (const packet of validPackets) {
-    const summary = packetCoverage.get(packet.manifestItemId) ?? {
-      packetIds: new Set(),
-      declaredPaths: new Set(),
-      observedPaths: new Set(),
-    };
-    summary.packetIds.add(packet.packetId);
-    for (const path of packet.files) {
-      summary.declaredPaths.add(path);
-      if (uploadFileSet.has(path) && (declarationsByPath.get(path) ?? []).length === 1) {
-        summary.observedPaths.add(path);
-      }
-    }
-    packetCoverage.set(packet.manifestItemId, summary);
-  }
-
-  const coverageByManifestItem = [...manifestItems.values()]
-    .map((item) => {
-      const summary = packetCoverage.get(item.id) ?? {
-        packetIds: new Set(),
-        declaredPaths: new Set(),
-        observedPaths: new Set(),
-      };
-      let coverageState = 'NO_PACKET';
-      if (summary.packetIds.size > 0 && summary.declaredPaths.size === 0) {
-        coverageState = 'PACKET_WITHOUT_FILES';
-      } else if (summary.declaredPaths.size > 0 && summary.observedPaths.size === 0) {
-        coverageState = 'FILES_MISSING';
-      } else if (
-        summary.observedPaths.size > 0 &&
-        summary.observedPaths.size < summary.declaredPaths.size
-      ) {
-        coverageState = 'PARTIAL';
-      } else if (
-        summary.declaredPaths.size > 0 &&
-        summary.observedPaths.size === summary.declaredPaths.size
-      ) {
-        coverageState = 'COVERED';
-      }
-
-      return {
-        manifestItemId: item.id,
-        siddhar: item.siddhar,
-        itemTitle: item.itemTitle,
-        priority: item.priority,
-        status: item.status,
-        packetCount: summary.packetIds.size,
-        declaredFileCount: summary.declaredPaths.size,
-        observedFileCount: summary.observedPaths.size,
-        coverageState,
-      };
-    })
-    .sort((left, right) => left.manifestItemId.localeCompare(right.manifestItemId));
-
+  const coverageByManifestItem = buildCoverageByManifestItem({
+    manifestItems,
+    validPackets,
+    uploadFileSet,
+    declarationsByPath,
+  });
   const coveredManifestItems = coverageByManifestItem.filter(
     (item) => item.coverageState === 'COVERED',
   ).length;
@@ -465,8 +457,8 @@ export function validateSiddharEvidenceCoverage({
     manifestItemCount,
     packetFileCount: packetFiles.length,
     validPacketCount: validPackets.length,
-    declaredFileCount: [...declarationsByPath.values()].reduce(
-      (total, declarations) => total + declarations.length,
+    declaredFileCount: sortedDeclarations.reduce(
+      (total, [, declarations]) => total + declarations.length,
       0,
     ),
     uniqueDeclaredFileCount: declarationsByPath.size,
@@ -499,7 +491,7 @@ function loadPacketFiles() {
     .sort((left, right) => left.name.localeCompare(right.name))
     .map((entry) => {
       const absolutePath = resolve(submissionsDirectory, entry.name);
-      const path = repositoryPath(repositoryRoot, absolutePath);
+      const path = toRepositoryPath(repositoryRoot, absolutePath);
       try {
         return { path, value: JSON.parse(readFileSync(absolutePath, 'utf8')) };
       } catch (error) {
@@ -536,7 +528,7 @@ function run() {
       `${result.coveredManifestItems}/${result.manifestItemCount} manifest items covered, ` +
       '0 automatic status changes, 0 production-eligible files.',
   );
-  console.log(`Evidence: ${repositoryPath(repositoryRoot, reportPath)}`);
+  console.log(`Evidence: ${toRepositoryPath(repositoryRoot, reportPath)}`);
 }
 
 const isDirectExecution =
