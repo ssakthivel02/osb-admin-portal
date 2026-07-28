@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "packetId": "SID-SUB-YYYYMMDD-001",
+  "manifestItemId": "SID-EV-000",
+  "manifestStatusObserved": "UNRESOLVED",
+  "submissionStatus": "DRAFT",
+  "submittedOn": "YYYY-MM-DD",
+  "productionEligible": false,
+  "source": {
+    "type": "OFFICIAL_MANUSCRIPT_CATALOGUE",
+    "repository": "REPLACE_WITH_OFFICIAL_REPOSITORY",
+    "recordId": "REPLACE_WITH_RECORD_ID",
+    "title": "REPLACE_WITH_SOURCE_TITLE",
+    "author": "UNKNOWN_OR_DOCUMENTED_AUTHOR",
+    "editor": "UNKNOWN_OR_DOCUMENTED_EDITOR",
+    "publisher": "UNKNOWN_OR_DOCUMENTED_PUBLISHER",
+    "edition": "UNKNOWN_OR_DOCUMENTED_EDITION",
+    "publicationYear": "UNKNOWN_OR_DOCUMENTED_YEAR",
+    "language": "Tamil",
+    "script": "Tamil",
+    "officialUrl": "https://example.invalid/replace-with-official-source",
+    "accessedOn": "YYYY-MM-DD"
+  },
+  "locator": {
+    "bundleNumber": "",
+    "workNumber": "",
+    "accessionNumber": "",
+    "folioOrPage": "REPLACE_WITH_FOLIO_OR_PAGE",
+    "verseOrLine": "REPLACE_WITH_VERSE_OR_LINE",
+    "adjacentContextIncluded": false
+  },
+  "files": [
+    {
+      "path": "docs/content-intake/evidence/uploads/replace-with-evidence-file.pdf",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "mimeType": "application/pdf",
+      "sizeBytes": 1
+    }
+  ],
+  "review": {
+    "TRANSCRIPTION": {
+      "status": "PENDING",
+      "reviewer": "UNASSIGNED",
+      "reviewedOn": null,
+      "notes": ""
+    },
+    "TRANSLITERATION": {
+      "status": "PENDING",
+      "reviewer": "UNASSIGNED",
+      "reviewedOn": null,
+      "notes": "Declare the transliteration standard before completion."
+    },
+    "TRANSLATION": {
+      "status": "PENDING",
+      "reviewer": "UNASSIGNED",
+      "reviewedOn": null,
+      "notes": ""
+    },
+    "EDITORIAL": {
+      "status": "PENDING",
+      "reviewer": "UNASSIGNED",
+      "reviewedOn": null,
+      "notes": "No status promotion is authorised by this packet."
+    }
+  },
+  "rights": {
+    "status": "UNRESOLVED",
+    "rightsHolder": "UNRESOLVED",
+    "basis": "UNRESOLVED",
+    "permissionReference": "UNRESOLVED",
+    "reuseScope": "NO_REUSE_APPROVED"
+  },
+  "proposedDisposition": "HOLD_FOR_REVIEW",
+  "declarations": {
+    "noAutomaticStatusPromotion": true,
+    "noProductionUse": true,
+    "noMedicalUse": true,
+    "containsNoSecretsOrPersonalData": true
+  },
+  "notes": "Template only. Copy into docs/content-intake/evidence/submissions after replacing every placeholder and verifying the file hash."
+}
