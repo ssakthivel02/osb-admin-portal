@@ -2,7 +2,9 @@
 
 **Date:** 2026-07-28  
 **Branch:** `quality/accessibility-baseline`  
+**Delivered through:** `quality/ci-gate`  
 **Parent commit:** `79473c351ef95849375fd082b417f821d98b4b50`  
+**Implementation commit:** `276c9f1e5e9166e0833f5e21fb4fb48f5d3dddf8`  
 **Production impact:** None
 
 ## Objective
@@ -47,11 +49,14 @@ Added deterministic Vitest assertions for:
 5. discernible text for every link;
 6. valid targets for every in-page anchor.
 
-## Command evidence
+## Command and workflow evidence
 
-No local PASS result is claimed. The child branch push triggers the existing repository Quality Gate and CodeQL workflows. Their results must be inspected before this task is marked verified.
+No local PASS result is claimed. Validation evidence comes from GitHub Actions for implementation commit `276c9f1e5e9166e0833f5e21fb4fb48f5d3dddf8`.
 
-Expected workflow commands:
+- Quality Gate run `30319275564` (#153): **success**.
+- CodeQL run `30319275565` (#47): **success**.
+
+The Quality Gate completed:
 
 ```bash
 npm ci --no-audit --no-fund
@@ -62,6 +67,8 @@ npm run test:ci
 npm run build
 npm audit --audit-level=high
 ```
+
+It also uploaded type-check evidence, JUnit test evidence, the production build artifact, and dependency-audit evidence. CodeQL completed JavaScript and TypeScript repository analysis successfully.
 
 ## Safety boundaries
 
@@ -88,5 +95,5 @@ Add a documented colour-contrast inventory for the design tokens and introduce a
 ## Status
 
 ACCESSIBILITY SEMANTIC BASELINE IMPLEMENTED  
-CI VALIDATION PENDING  
+QUALITY GATE AND CODEQL VERIFIED  
 FULL WCAG CONFORMANCE NOT ESTABLISHED
