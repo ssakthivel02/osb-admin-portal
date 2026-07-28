@@ -26,7 +26,7 @@ describe('App', () => {
       within(statusRegion).getByText('Verified implementation baseline'),
     ).toBeInTheDocument();
     expect(
-      within(statusRegion).getByText(/Authentication, API access, and editorial workflows remain intentionally disabled/i),
+      within(statusRegion).getByText(/Authentication, API access, editorial workflows, learner persistence, and production AI remain intentionally disabled/i),
     ).toBeInTheDocument();
   });
 
@@ -37,5 +37,14 @@ describe('App', () => {
     expect(screen.getByText('Executable scaffold').tagName).toBe('DD');
     expect(screen.getByText('Production state').tagName).toBe('DT');
     expect(screen.getByText('Blocked pending quality gates').tagName).toBe('DD');
+  });
+
+  it('renders the premium learning preview as an integrated page', () => {
+    render(<App />);
+
+    expect(screen.getByRole('navigation', { name: /primary navigation/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /useful every day for learners/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /quiz studio built around different ways of thinking/i })).toBeInTheDocument();
+    expect(screen.getByText('Premium non-production preview')).toBeInTheDocument();
   });
 });
