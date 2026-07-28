@@ -85,7 +85,20 @@ jobs:
           retention-days: 7
 
       - name: Lint
-        run: npm run lint
+        shell: bash
+        run: |
+          mkdir -p quality-evidence
+          set -o pipefail
+          npm run lint 2>&1 | tee quality-evidence/lint.log
+
+      - name: Upload lint evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: lint-evidence
+          path: quality-evidence/lint.log
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: Type-check
         shell: bash
