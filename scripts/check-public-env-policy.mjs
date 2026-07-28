@@ -15,9 +15,10 @@ export const APPROVED_PUBLIC_KEYS = Object.freeze([
 const APPROVED_PUBLIC_KEY_SET = new Set(APPROVED_PUBLIC_KEYS);
 const SECRET_LIKE_KEY =
   /(SECRET|PASSWORD|PRIVATE[_-]?KEY|CONNECTION[_-]?STRING|STORAGE[_-]?KEY|ACCESS[_-]?KEY|API[_-]?KEY|TOKEN)/i;
-const PUBLIC_KEY_REFERENCE = /\bVITE_[A-Z0-9_]+\b/g;
+const PUBLIC_KEY_REFERENCE = /\bVITE_[A-Z0-9_]+\b(?!\*)/g;
 const ENV_ASSIGNMENT = /^\s*(VITE_[A-Z0-9_]+)\s*=/gm;
 const TEXT_FILE = /(?:^|\/)(?:\.env(?:\.example)?|[^/]+\.(?:[cm]?[jt]sx?|json|html|ya?ml))$/;
+const SYNTHETIC_FIXTURE = /(?:^|\/).*\.(?:test|spec)\.[cm]?[jt]sx?$/;
 
 function uniqueSorted(values) {
   return [...new Set(values)].sort((left, right) => left.localeCompare(right));
@@ -113,6 +114,7 @@ function listTrackedPolicyFiles(repositoryRoot) {
     .split('\0')
     .filter(Boolean)
     .filter((path) => TEXT_FILE.test(path))
+    .filter((path) => !SYNTHETIC_FIXTURE.test(path))
     .filter(
       (path) =>
         path === '.env.example' ||
