@@ -48,6 +48,18 @@ jobs:
         shell: bash
         run: git diff --exit-code -- package-lock.json
 
+      - name: Validate public environment policy
+        run: npm run check:public-env
+
+      - name: Upload public environment policy evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: public-env-policy-evidence
+          path: quality-evidence/public-env-policy.json
+          if-no-files-found: error
+          retention-days: 7
+
       - name: Lint
         run: npm run lint
 
