@@ -42,25 +42,25 @@
       "status": "PENDING",
       "reviewer": "UNASSIGNED",
       "reviewedOn": null,
-      "notes": ""
+      "notes": "Assign an authorised SID-REV-* reviewer ID from the governance registry before submission for review."
     },
     "TRANSLITERATION": {
       "status": "PENDING",
       "reviewer": "UNASSIGNED",
       "reviewedOn": null,
-      "notes": "Declare the transliteration standard before completion."
+      "notes": "Assign an authorised SID-REV-* reviewer ID and declare the transliteration standard before completion."
     },
     "TRANSLATION": {
       "status": "PENDING",
       "reviewer": "UNASSIGNED",
       "reviewedOn": null,
-      "notes": ""
+      "notes": "Assign an authorised SID-REV-* reviewer ID from the governance registry before submission for review."
     },
     "EDITORIAL": {
       "status": "PENDING",
       "reviewer": "UNASSIGNED",
       "reviewedOn": null,
-      "notes": "No status promotion is authorised by this packet."
+      "notes": "Assign a distinct authorised SID-REV-* editorial approver. No status promotion is authorised by this packet."
     }
   },
   "rights": {
@@ -77,5 +77,5 @@
     "noMedicalUse": true,
     "containsNoSecretsOrPersonalData": true
   },
-  "notes": "Template only. Copy into docs/content-intake/evidence/submissions after replacing every placeholder and verifying the file hash."
+  "notes": "Template only. Copy into docs/content-intake/evidence/submissions after replacing every placeholder, verifying the file hash, registering real reviewers with non-sensitive SID-REV-* identifiers, and preserving editorial separation of duties."
 }
