@@ -13,8 +13,9 @@ import { TrustSection } from './components/TrustSection';
 export function App() {
   return (
     <div className="site-shell" id="top">
+      <a className="skip-link" href="#main-content">Skip to main content</a>
       <SiteHeader />
-      <main>
+      <main id="main-content" tabIndex={-1}>
         <HeroSection />
         <MetricStrip />
         <AudienceSection />
