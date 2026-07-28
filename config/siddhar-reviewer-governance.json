@@ -18,16 +18,17 @@
     "TRANSLITERATION"
   ],
   "forbiddenIdentityTerms": [
-    "AI",
-    "BOT",
+    "AI REVIEWER",
+    "AUTOMATED REVIEWER",
     "CHATGPT",
     "DUMMY",
     "EXAMPLE",
     "GEMINI",
     "PLACEHOLDER",
+    "REVIEW BOT",
     "SYNTHETIC",
     "TBD",
-    "TEST",
+    "TEST REVIEWER",
     "TODO"
   ],
   "reviewers": []
