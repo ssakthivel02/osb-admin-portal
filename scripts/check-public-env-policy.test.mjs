@@ -2,11 +2,43 @@ import { describe, expect, it } from 'vitest';
 import {
   APPROVED_PUBLIC_KEYS,
   inspectPublicEnvironmentPolicy,
+  parsePublicEnvContract,
 } from './check-public-env-policy.mjs';
 
 const validExample = `${APPROVED_PUBLIC_KEYS.map((key) => `${key}=`).join('\n')}\n`;
 
 describe('public environment policy scanner', () => {
+  it('loads one sorted canonical contract for all approved public keys', () => {
+    expect(APPROVED_PUBLIC_KEYS).toEqual([
+      'VITE_API_BASE_URL',
+      'VITE_APP_ENV',
+      'VITE_APP_VERSION',
+      'VITE_AZURE_AD_API_SCOPE',
+      'VITE_AZURE_AD_CLIENT_ID',
+      'VITE_AZURE_AD_TENANT_ID',
+    ]);
+    expect(Object.isFrozen(APPROVED_PUBLIC_KEYS)).toBe(true);
+  });
+
+  it('fails closed for malformed, duplicate, or unsorted contracts', () => {
+    expect(() => parsePublicEnvContract(null)).toThrow(/must be an object/i);
+    expect(() =>
+      parsePublicEnvContract({ schemaVersion: 2, approvedPublicKeys: [] }),
+    ).toThrow(/schemaVersion must be 1/i);
+    expect(() =>
+      parsePublicEnvContract({
+        schemaVersion: 1,
+        approvedPublicKeys: ['VITE_APP_ENV', 'VITE_APP_ENV'],
+      }),
+    ).toThrow(/must be unique/i);
+    expect(() =>
+      parsePublicEnvContract({
+        schemaVersion: 1,
+        approvedPublicKeys: ['VITE_APP_VERSION', 'VITE_APP_ENV'],
+      }),
+    ).toThrow(/must be sorted/i);
+  });
+
   it('accepts the approved key surface and complete example', () => {
     const result = inspectPublicEnvironmentPolicy([
       { path: '.env.example', content: validExample },
@@ -17,6 +49,8 @@ describe('public environment policy scanner', () => {
     ]);
 
     expect(result.ok).toBe(true);
+    expect(result.contractPath).toBe('config/public-env-contract.json');
+    expect(result.contractSchemaVersion).toBe(1);
     expect(result.issues).toEqual([]);
   });
 
