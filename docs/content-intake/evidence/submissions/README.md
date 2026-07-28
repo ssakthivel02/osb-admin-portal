@@ -26,7 +26,21 @@ AI chat exports, research plans, generated code, search suggestions, synthetic r
 8. Keep all four declarations set to `true`.
 9. Run `npm run check:siddhar-submissions`.
 10. Run `npm run check:siddhar-files` to compare each declaration with the committed file bytes.
-11. Submit the packet and source files for human review. Do not edit the canonical manifest status during intake.
+11. Run `npm run check:siddhar-coverage` to ensure every controlled upload is owned by exactly one valid packet and every packet declaration resolves to one controlled upload.
+12. Submit the packet and source files for human review. Do not edit the canonical manifest status during intake.
+
+## Coverage ownership rule
+
+Every regular file under `docs/content-intake/evidence/uploads/` must be declared by exactly one valid `SID-SUB-*` packet. The coverage gate rejects:
+
+- orphan files with no valid packet declaration;
+- one path declared by more than one packet;
+- declarations pointing to missing files;
+- malformed or stale packets being used to satisfy coverage;
+- symbolic links or redirected upload directories;
+- unsupported file extensions inside the controlled uploads path.
+
+An absent uploads directory and zero completed packets is a valid, truthful baseline. Uncovered manifest controls are reported for planning but do not fail CI until a packet or file is added incorrectly.
 
 ## Accepted evidence files
 
@@ -37,11 +51,11 @@ AI chat exports, research plans, generated code, search suggestions, synthetic r
 
 Maximum file size is 100 MiB per file. The packet validator checks declared metadata. The file-integrity validator additionally checks that each path resolves inside the repository, exists as a regular non-symlink file, matches the declared byte size and SHA-256 digest, and has a PDF/JPEG/PNG/TIFF byte signature consistent with its extension and declared MIME type.
 
-Neither validator proves that a file is an authentic source, complete, correctly catalogued, legally reusable, or accurately transcribed.
+The coverage validator reconciles packet declarations, controlled uploads, and manifest controls. None of these validators proves that a file is an authentic source, complete, correctly catalogued, legally reusable, or accurately transcribed.
 
 ## Manual review still required
 
-A successful validation result means only that the packet is structurally complete, safely linked to the evidence backlog, and byte-consistent with the committed file. Qualified reviewers must still examine:
+A successful validation result means only that the packet is structurally complete, safely linked to the evidence backlog, byte-consistent with the committed file, and uniquely owns its controlled upload. Qualified reviewers must still examine:
 
 - source identity and catalogue details;
 - folio, page, verse, and adjacent context;
