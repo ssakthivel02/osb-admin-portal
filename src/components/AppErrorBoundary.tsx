@@ -13,17 +13,17 @@ export class AppErrorBoundary extends Component<
   AppErrorBoundaryProps,
   AppErrorBoundaryState
 > {
-  public state: AppErrorBoundaryState = { hasError: false };
+  public override state: AppErrorBoundaryState = { hasError: false };
 
   public static getDerivedStateFromError(): AppErrorBoundaryState {
     return { hasError: true };
   }
 
-  public componentDidCatch(error: Error, info: ErrorInfo): void {
+  public override componentDidCatch(error: Error, info: ErrorInfo): void {
     this.props.onError?.(error, info);
   }
 
-  public render(): ReactNode {
+  public override render(): ReactNode {
     if (this.state.hasError) {
       return (
         <main className="app-shell" id="main-content" tabIndex={-1}>
@@ -35,7 +35,11 @@ export class AppErrorBoundary extends Component<
                 No data was changed. Reload the page to retry. If the problem continues,
                 capture the time and browser details for support.
               </p>
-              <button className="button button--primary" type="button" onClick={() => window.location.reload()}>
+              <button
+                className="button button--primary"
+                type="button"
+                onClick={() => window.location.reload()}
+              >
                 Reload portal
               </button>
             </div>
