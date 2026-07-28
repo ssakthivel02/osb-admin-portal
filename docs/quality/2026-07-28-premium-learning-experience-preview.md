@@ -1,7 +1,8 @@
 # Premium Learning Experience Preview Quality Record
 
 **Date:** 2026-07-28  
-**Branch:** `quality/premium-learning-preview`  
+**Delivered branch:** `quality/ci-gate`  
+**Prepared through child branches:** `experience/premium-learning-preview`, `quality/premium-learning-preview`  
 **Task:** Premium, intergenerational learning-experience scaffold  
 **Production impact:** None
 
@@ -31,11 +32,11 @@ This batch changes 28 unique repository files:
 - 3 existing application files updated;
 - 2 documentation files.
 
-The compare result from parent commit `e844a0ce45ba649980f320429ce20209d2196d6d` to implementation commit `95a90213a8a25f943f1e547de9bd3d66009b058a` reported:
+The compare result from parent commit `e844a0ce45ba649980f320429ce20209d2196d6d` to implementation-evidence commit `ab6251c31a446386fdc80e8c70f062ad1e36b485` reported:
 
 - status: ahead;
-- commits: 28;
-- files changed: 28;
+- commits: 29;
+- unique files changed: 28;
 - behind: 0.
 
 ## Experience scope added
@@ -60,13 +61,19 @@ The compare result from parent commit `e844a0ce45ba649980f320429ce20209d2196d6d`
 - no deployment configuration or `main` branch was modified;
 - all product functionality beyond static preview content remains explicitly blocked.
 
-## Command evidence
+## Command and workflow evidence
 
-A local TypeScript/TSX syntax-transpilation check completed successfully for all preview source files. The generated SVG source files were also checked as well-formed XML before repository publication. These checks do not replace repository CI.
+Local pre-publication checks:
 
-CI evidence is pending for the branch-trigger commit. No repository lint, type-check, Vitest, production-build, dependency-audit, CodeQL, or accessibility PASS is claimed until the workflow result is inspected.
+- TypeScript/TSX syntax transpilation completed successfully for every new or modified preview source file;
+- both generated SVG source files parsed successfully as well-formed XML.
 
-Expected inherited workflow commands include:
+Repository CI for commit `ab6251c31a446386fdc80e8c70f062ad1e36b485`:
+
+- Quality Gate run `30317647665` (#143): **success**;
+- CodeQL run `30317647684` (#37): **success**.
+
+The successful Quality Gate job completed all configured steps:
 
 ```bash
 npm ci --no-audit --no-fund
@@ -77,6 +84,12 @@ npm run test:ci
 npm run build
 npm audit --audit-level=high
 ```
+
+It also uploaded type-check evidence, JUnit test evidence, the production-build artifact, and dependency-audit evidence.
+
+The successful CodeQL job initialized analysis and completed JavaScript/TypeScript repository analysis.
+
+This document update is evidence reconciliation only. Its resulting documentation commit must be checked separately; no application code, dependency, asset, test, workflow, or configuration change is introduced by that reconciliation.
 
 ## Blockers
 
@@ -96,5 +109,5 @@ Add automated accessibility checks for the rendered page using a dependency-mini
 ## Status
 
 PREMIUM EXPERIENCE PREVIEW IMPLEMENTED  
-CI VALIDATION PENDING  
+IMPLEMENTATION QUALITY GATE AND CODEQL VERIFIED  
 PRODUCTION FUNCTIONALITY AND DEPLOYMENT REMAIN BLOCKED
