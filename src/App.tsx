@@ -1,3 +1,4 @@
+import './accessibility.css';
 import { AudienceSection } from './components/AudienceSection';
 import { HeroSection } from './components/HeroSection';
 import { LearningTracksSection } from './components/LearningTracksSection';
