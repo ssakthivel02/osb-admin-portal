@@ -3,14 +3,58 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-export const APPROVED_PUBLIC_KEYS = Object.freeze([
-  'VITE_API_BASE_URL',
-  'VITE_APP_ENV',
-  'VITE_APP_VERSION',
-  'VITE_AZURE_AD_API_SCOPE',
-  'VITE_AZURE_AD_CLIENT_ID',
-  'VITE_AZURE_AD_TENANT_ID',
-]);
+const scriptDirectory = dirname(fileURLToPath(import.meta.url));
+const repositoryRoot = resolve(scriptDirectory, '..');
+const publicEnvContractPath = resolve(
+  repositoryRoot,
+  'config/public-env-contract.json',
+);
+
+export function parsePublicEnvContract(value) {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    throw new TypeError('public environment contract must be an object');
+  }
+
+  if (value.schemaVersion !== 1) {
+    throw new TypeError('public environment contract schemaVersion must be 1');
+  }
+
+  if (!Array.isArray(value.approvedPublicKeys)) {
+    throw new TypeError('public environment contract approvedPublicKeys must be an array');
+  }
+
+  const approvedPublicKeys = value.approvedPublicKeys;
+  if (
+    approvedPublicKeys.length === 0 ||
+    approvedPublicKeys.some(
+      (key) => typeof key !== 'string' || !/^VITE_[A-Z0-9_]+$/.test(key),
+    )
+  ) {
+    throw new TypeError(
+      'public environment contract keys must be non-empty canonical VITE_* names',
+    );
+  }
+
+  const uniqueKeys = [...new Set(approvedPublicKeys)];
+  if (uniqueKeys.length !== approvedPublicKeys.length) {
+    throw new TypeError('public environment contract keys must be unique');
+  }
+
+  const sortedKeys = [...uniqueKeys].sort((left, right) =>
+    left.localeCompare(right),
+  );
+  if (sortedKeys.some((key, index) => key !== approvedPublicKeys[index])) {
+    throw new TypeError('public environment contract keys must be sorted');
+  }
+
+  return Object.freeze(sortedKeys);
+}
+
+const publicEnvContract = JSON.parse(
+  readFileSync(publicEnvContractPath, 'utf8'),
+);
+
+export const APPROVED_PUBLIC_KEYS = parsePublicEnvContract(publicEnvContract);
 
 const APPROVED_PUBLIC_KEY_SET = new Set(APPROVED_PUBLIC_KEYS);
 const SECRET_LIKE_KEY =
@@ -91,6 +135,8 @@ export function inspectPublicEnvironmentPolicy(files) {
 
   return {
     ok: issues.length === 0,
+    contractPath: 'config/public-env-contract.json',
+    contractSchemaVersion: 1,
     approvedKeys: APPROVED_PUBLIC_KEYS,
     inspectedFiles: files.map((file) => file.path).sort(),
     references: references.sort((left, right) =>
@@ -104,9 +150,9 @@ export function inspectPublicEnvironmentPolicy(files) {
   };
 }
 
-function listTrackedPolicyFiles(repositoryRoot) {
+function listTrackedPolicyFiles(root) {
   const output = execFileSync('git', ['ls-files', '-z'], {
-    cwd: repositoryRoot,
+    cwd: root,
     encoding: 'utf8',
   });
 
@@ -120,19 +166,18 @@ function listTrackedPolicyFiles(repositoryRoot) {
         path === '.env.example' ||
         path === 'index.html' ||
         path === 'vite.config.ts' ||
+        path === 'config/public-env-contract.json' ||
         path.startsWith('src/') ||
         path.startsWith('public/') ||
         path.startsWith('.github/'),
     )
     .map((path) => ({
       path,
-      content: readFileSync(resolve(repositoryRoot, path), 'utf8'),
+      content: readFileSync(resolve(root, path), 'utf8'),
     }));
 }
 
 function run() {
-  const scriptDirectory = dirname(fileURLToPath(import.meta.url));
-  const repositoryRoot = resolve(scriptDirectory, '..');
   const evidencePath = resolve(
     repositoryRoot,
     'quality-evidence/public-env-policy.json',
@@ -153,7 +198,8 @@ function run() {
   }
 
   console.log(
-    `Public environment policy passed: ${result.approvedKeys.length} approved keys, ` +
+    `Public environment policy passed from ${result.contractPath}: ` +
+      `${result.approvedKeys.length} approved keys, ` +
       `${result.inspectedFiles.length} files inspected, ${result.references.length} references checked.`,
   );
   console.log(
