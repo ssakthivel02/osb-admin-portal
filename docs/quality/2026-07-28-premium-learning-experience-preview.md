@@ -1,13 +1,13 @@
 # Premium Learning Experience Preview Quality Record
 
 **Date:** 2026-07-28  
-**Branch:** `experience/premium-learning-preview`  
+**Branch:** `quality/premium-learning-preview`  
 **Task:** Premium, intergenerational learning-experience scaffold  
 **Production impact:** None
 
 ## Objective
 
-Implement the user-approved AI learning hero visual and a coherent, non-production experience preview without claiming that authentication, learning persistence, teacher workflows, scoring, AI services, or production deployment exist.
+Implement the user-approved AI learning hero direction and a coherent, non-production experience preview without claiming that authentication, learning persistence, teacher workflows, scoring, AI services, or production deployment exist.
 
 ## Repository inspection
 
@@ -23,13 +23,20 @@ Before implementation:
 
 This batch changes 28 unique repository files:
 
-- 2 optimised, text-based SVG image assets containing embedded WebP visuals;
+- 2 project-owned, accessible vector SVG visual assets derived from the approved learning direction;
 - 1 closed TypeScript experience contract;
 - 5 typed content-data modules;
 - 12 focused React components;
 - 3 component-level Vitest files;
 - 3 existing application files updated;
 - 2 documentation files.
+
+The compare result from parent commit `e844a0ce45ba649980f320429ce20209d2196d6d` to implementation commit `95a90213a8a25f943f1e547de9bd3d66009b058a` reported:
+
+- status: ahead;
+- commits: 28;
+- files changed: 28;
+- behind: 0.
 
 ## Experience scope added
 
@@ -55,9 +62,9 @@ This batch changes 28 unique repository files:
 
 ## Command evidence
 
-CI evidence is pending for the initial batch commit. No local lint, type-check, test, build, audit, or accessibility PASS is claimed in this initial record.
+A local TypeScript/TSX syntax-transpilation check completed successfully for all preview source files. The generated SVG source files were also checked as well-formed XML before repository publication. These checks do not replace repository CI.
 
-A local TypeScript/TSX syntax-transpilation check completed successfully for all preview source files, and both embedded SVG assets parsed successfully as XML. These checks do not replace repository CI.
+CI evidence is pending for the branch-trigger commit. No repository lint, type-check, Vitest, production-build, dependency-audit, CodeQL, or accessibility PASS is claimed until the workflow result is inspected.
 
 Expected inherited workflow commands include:
 
@@ -79,7 +86,7 @@ npm audit --audit-level=high
 4. Quiz scoring, question banks, accessibility accommodations, and persistence are not implemented.
 5. AI safety, evaluation, moderation, observability, and cost controls are undefined.
 6. Formal WCAG automation and keyboard/manual review are not yet part of CI.
-7. Generated images require stakeholder review for brand fit, cultural representation, and future publication rights.
+7. The visual assets require stakeholder review for brand fit and cultural representation.
 8. Siddhar content authentication remains a separate blocked editorial workflow.
 
 ## Next task
