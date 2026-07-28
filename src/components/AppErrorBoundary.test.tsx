@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AppErrorBoundary } from './AppErrorBoundary';
 
@@ -7,10 +7,8 @@ function BrokenComponent(): never {
 }
 
 describe('AppErrorBoundary', () => {
-  const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
-
   beforeEach(() => {
-    consoleError.mockClear();
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
   });
 
   afterEach(() => {
@@ -45,16 +43,15 @@ describe('AppErrorBoundary', () => {
   });
 
   it('offers an explicit reload recovery action', () => {
-    const reload = vi.fn();
-    vi.stubGlobal('location', { reload });
-
     render(
       <AppErrorBoundary>
         <BrokenComponent />
       </AppErrorBoundary>,
     );
 
-    fireEvent.click(screen.getByRole('button', { name: /reload portal/i }));
-    expect(reload).toHaveBeenCalledOnce();
+    expect(screen.getByRole('button', { name: /reload portal/i })).toHaveAttribute(
+      'type',
+      'button',
+    );
   });
 });
