@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "packetStatuses": [
+    "DRAFT",
+    "REJECTED",
+    "SUBMITTED_FOR_REVIEW"
+  ],
+  "sourceTypes": [
+    "CRITICAL_EDITION",
+    "OFFICIAL_MANUSCRIPT_CATALOGUE",
+    "OFFICIAL_REPOSITORY_LETTER",
+    "OFFICIAL_TEMPLE_PUBLICATION",
+    "OFFICIAL_TEXT_PORTAL",
+    "PRIMARY_SOURCE_IMAGE",
+    "PRINT_EDITION"
+  ],
+  "reviewRoles": [
+    "EDITORIAL",
+    "TRANSCRIPTION",
+    "TRANSLATION",
+    "TRANSLITERATION"
+  ],
+  "reviewStatuses": [
+    "COMPLETE",
+    "NOT_APPLICABLE",
+    "PENDING"
+  ],
+  "rightsStatuses": [
+    "PERMISSION_GRANTED",
+    "PUBLIC_DOMAIN_CLAIM_UNVERIFIED",
+    "RESTRICTED",
+    "UNRESOLVED"
+  ],
+  "allowedMimeTypes": [
+    "application/pdf",
+    "image/jpeg",
+    "image/png",
+    "image/tiff"
+  ],
+  "allowedFileExtensions": [
+    ".jpeg",
+    ".jpg",
+    ".pdf",
+    ".png",
+    ".tif",
+    ".tiff"
+  ],
+  "maxFileSizeBytes": 104857600
+}
