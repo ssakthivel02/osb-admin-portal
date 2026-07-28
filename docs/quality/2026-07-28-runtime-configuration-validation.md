@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-28  
 **Working branch:** `quality/runtime-config-validation`  
-**Parent branch:** `quality/ci-gate`  
+**Delivered branch:** `quality/ci-gate`  
 **Task:** Typed, fail-closed public runtime configuration validation  
 **Production impact:** None
 
@@ -57,12 +57,16 @@ No real tenant, client, endpoint, credential, token, or production identifier is
 
 - validator: `e863349a9635ae9ca41dfcf7547bb11cc3356311`
 - tests: `5a95d76d7dba8d0a8a6d4e8ba0537c366db6cd60`
+- initial progress record: `39ba34d753abba59c1288f81418ca40afee3f063`
 
-## Command evidence
+## Command and workflow evidence
 
-No local install, lint, type-check, test, build, dependency-audit, or CodeQL PASS is claimed. The branch must be delivered through `quality/ci-gate` so the existing GitHub Actions workflows can provide independent evidence.
+No local PASS result is claimed. Independent evidence comes from GitHub Actions for commit `39ba34d753abba59c1288f81418ca40afee3f063`:
 
-Expected workflow commands:
+- Quality Gate run `30330426407` (#181): **success**;
+- CodeQL run `30330426438` (#75): **success**.
+
+The Quality Gate completed:
 
 ```bash
 npm ci --no-audit --no-fund
@@ -73,6 +77,12 @@ npm run test:ci
 npm run build
 npm audit --audit-level=high
 ```
+
+It also completed type-check evidence upload, JUnit test evidence upload, production build artifact upload, and dependency-audit evidence upload.
+
+CodeQL initialized and completed JavaScript and TypeScript analysis successfully.
+
+This final document reconciliation changes documentation only. Its own workflow result must be inspected separately; no application code, test, dependency, lockfile, workflow, or configuration behaviour is changed by this reconciliation commit.
 
 ## Safety impact
 
@@ -100,5 +110,5 @@ Add a CI-only public-environment policy check that scans committed configuration
 ## Status
 
 RUNTIME CONFIGURATION VALIDATOR IMPLEMENTED  
-CI VALIDATION PENDING  
+QUALITY GATE AND CODEQL VERIFIED  
 PRODUCTION CONFIGURATION AND INTEGRATION REMAIN BLOCKED
