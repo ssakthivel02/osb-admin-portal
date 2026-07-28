@@ -31,6 +31,12 @@
     "RESTRICTED",
     "UNRESOLVED"
   ],
+  "proposedDispositions": [
+    "CORRECTION_EVIDENCE_ONLY",
+    "HOLD_FOR_REVIEW",
+    "REJECT_EVIDENCE",
+    "SOURCE_REVIEW_ONLY"
+  ],
   "allowedMimeTypes": [
     "application/pdf",
     "image/jpeg",
