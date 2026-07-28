@@ -1,3 +1,5 @@
+import publicEnvContract from '../../config/public-env-contract.json';
+
 export const APP_ENVIRONMENTS = [
   'development',
   'test',
@@ -27,15 +29,7 @@ export type RuntimeConfigValidationResult =
   | { readonly ok: true; readonly value: RuntimeConfig }
   | { readonly ok: false; readonly issues: readonly RuntimeConfigIssue[] };
 
-const ALLOWED_PUBLIC_KEYS = new Set([
-  'VITE_AZURE_AD_CLIENT_ID',
-  'VITE_AZURE_AD_TENANT_ID',
-  'VITE_AZURE_AD_API_SCOPE',
-  'VITE_API_BASE_URL',
-  'VITE_APP_ENV',
-  'VITE_APP_VERSION',
-]);
-
+const ALLOWED_PUBLIC_KEYS = new Set(publicEnvContract.approvedPublicKeys);
 const SECRET_LIKE_KEY =
   /(SECRET|PASSWORD|PRIVATE[_-]?KEY|CONNECTION[_-]?STRING|STORAGE[_-]?KEY|ACCESS[_-]?KEY|API[_-]?KEY|TOKEN)/i;
 const UUID_PATTERN =
