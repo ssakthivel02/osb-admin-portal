@@ -68,7 +68,11 @@
     "rightsHolder": "UNRESOLVED",
     "basis": "UNRESOLVED",
     "permissionReference": "UNRESOLVED",
-    "reuseScope": "NO_REUSE_APPROVED"
+    "reuseScope": "NO_REUSE_APPROVED",
+    "decisionId": "UNRESOLVED",
+    "decisionRecordPath": "UNRESOLVED",
+    "rightsReviewerId": "UNASSIGNED",
+    "decidedOn": null
   },
   "proposedDisposition": "HOLD_FOR_REVIEW",
   "declarations": {
@@ -77,5 +81,5 @@
     "noMedicalUse": true,
     "containsNoSecretsOrPersonalData": true
   },
-  "notes": "Template only. Copy into docs/content-intake/evidence/submissions after replacing every placeholder, verifying the file hash, registering real reviewers with non-sensitive SID-REV-* identifiers, and preserving editorial separation of duties."
+  "notes": "Template only. Copy into docs/content-intake/evidence/submissions after replacing every placeholder, verifying the source-file hash, registering real reviewers with non-sensitive SID-REV-* identifiers, preserving editorial separation of duties, and completing a controlled rights decision only when real permission or restriction evidence exists."
 }
