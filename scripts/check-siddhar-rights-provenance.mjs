@@ -8,7 +8,7 @@ import {
   realpathSync,
   writeFileSync,
 } from 'node:fs';
-import { basename, dirname, extname, isAbsolute, relative, resolve, sep } from 'node:path';
+import { dirname, extname, isAbsolute, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { detectEvidenceMimeType } from './check-siddhar-evidence-file-integrity.mjs';
 import { SIDDHAR_EVIDENCE_SUBMISSION_CONTRACT } from './check-siddhar-evidence-submissions.mjs';
