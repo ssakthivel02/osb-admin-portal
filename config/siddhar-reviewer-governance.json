@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "reviewerIdPattern": "^SID-REV-[A-Z0-9]{6,24}$",
+  "attestationPattern": "^SID-REV-ATTEST-[0-9]{8}-[0-9]{3}$",
+  "unassignedValue": "UNASSIGNED",
+  "reviewRoles": [
+    "EDITORIAL",
+    "TRANSCRIPTION",
+    "TRANSLATION",
+    "TRANSLITERATION"
+  ],
+  "approvalRoles": [
+    "EDITORIAL"
+  ],
+  "preparationRoles": [
+    "TRANSCRIPTION",
+    "TRANSLATION",
+    "TRANSLITERATION"
+  ],
+  "forbiddenIdentityTerms": [
+    "AI REVIEWER",
+    "AUTOMATED REVIEWER",
+    "CHATGPT",
+    "DUMMY",
+    "EXAMPLE",
+    "GEMINI",
+    "PLACEHOLDER",
+    "REVIEW BOT",
+    "SYNTHETIC",
+    "TBD",
+    "TEST REVIEWER",
+    "TODO"
+  ],
+  "reviewers": []
+}

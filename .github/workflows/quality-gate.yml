@@ -1,0 +1,206 @@
+name: Quality Gate
+
+on:
+  pull_request:
+    branches:
+      - main
+      - audit/repository-baseline
+  push:
+    branches:
+      - audit/repository-baseline
+      - quality/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-gate-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Lint, type-check, test, build, and audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+
+      - name: Record runtime versions
+        run: |
+          node --version
+          npm --version
+
+      - name: Install dependencies from lockfile
+        run: npm ci --no-audit --no-fund
+
+      - name: Verify lockfile remains unchanged
+        shell: bash
+        run: git diff --exit-code -- package-lock.json
+
+      - name: Validate public environment policy
+        run: npm run check:public-env
+
+      - name: Upload public environment policy evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: public-env-policy-evidence
+          path: quality-evidence/public-env-policy.json
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Validate Siddhar evidence manifest
+        run: npm run check:siddhar-evidence
+
+      - name: Upload Siddhar evidence manifest report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: siddhar-evidence-manifest-report
+          path: quality-evidence/siddhar-evidence-manifest.json
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Validate Siddhar evidence submission packets
+        run: npm run check:siddhar-submissions
+
+      - name: Upload Siddhar evidence submission report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: siddhar-evidence-submission-report
+          path: quality-evidence/siddhar-evidence-submissions.json
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Validate Siddhar evidence file integrity
+        run: npm run check:siddhar-files
+
+      - name: Upload Siddhar evidence file-integrity report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: siddhar-evidence-file-integrity-report
+          path: quality-evidence/siddhar-evidence-file-integrity.json
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Validate Siddhar evidence orphan and coverage policy
+        run: npm run check:siddhar-coverage
+
+      - name: Upload Siddhar evidence coverage report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: siddhar-evidence-coverage-report
+          path: quality-evidence/siddhar-evidence-coverage.json
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Validate Siddhar reviewer identity and separation of duties
+        run: npm run check:siddhar-reviewers
+
+      - name: Upload Siddhar reviewer governance report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: siddhar-reviewer-governance-report
+          path: quality-evidence/siddhar-reviewer-governance.json
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Validate Siddhar rights decision provenance
+        run: npm run check:siddhar-rights
+
+      - name: Upload Siddhar rights provenance report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: siddhar-rights-provenance-report
+          path: quality-evidence/siddhar-rights-provenance.json
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Lint
+        shell: bash
+        run: |
+          mkdir -p quality-evidence
+          set -o pipefail
+          npm run lint 2>&1 | tee quality-evidence/lint.log
+
+      - name: Upload lint evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: lint-evidence
+          path: quality-evidence/lint.log
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Type-check
+        shell: bash
+        run: |
+          mkdir -p quality-evidence
+          set -o pipefail
+          npm run typecheck 2>&1 | tee quality-evidence/typecheck.log
+
+      - name: Upload type-check evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: typecheck-evidence
+          path: quality-evidence/typecheck.log
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Test with JUnit evidence
+        shell: bash
+        run: |
+          mkdir -p quality-evidence
+          npm run test:ci
+
+      - name: Upload test evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: test-evidence
+          path: quality-evidence/junit.xml
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload production build artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: osb-admin-portal-dist
+          path: dist
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Audit dependencies for high-severity findings
+        shell: bash
+        run: |
+          mkdir -p quality-evidence
+          npm audit --audit-level=high --json > quality-evidence/npm-audit.json
+
+      - name: Upload dependency audit evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: dependency-audit-evidence
+          path: quality-evidence/npm-audit.json
+          if-no-files-found: error
+          retention-days: 7
