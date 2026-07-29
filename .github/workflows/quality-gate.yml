@@ -120,6 +120,18 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+      - name: Validate Siddhar rights decision provenance
+        run: npm run check:siddhar-rights
+
+      - name: Upload Siddhar rights provenance report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: siddhar-rights-provenance-report
+          path: quality-evidence/siddhar-rights-provenance.json
+          if-no-files-found: error
+          retention-days: 7
+
       - name: Lint
         shell: bash
         run: |
