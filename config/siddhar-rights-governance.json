@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "decisionIdPattern": "^SID-RGT-DEC-[0-9]{8}-[0-9]{3}$",
+  "permissionRecordIdPattern": "^SID-RGT-PERM-[0-9]{8}-[0-9]{3}$",
+  "decisionPathPrefix": "docs/content-intake/evidence/rights/decisions/",
+  "permissionEvidencePathPrefix": "docs/content-intake/evidence/uploads/rights/",
+  "authoritativeStatuses": [
+    "PERMISSION_GRANTED",
+    "RESTRICTED"
+  ],
+  "nonAuthoritativeStatuses": [
+    "PUBLIC_DOMAIN_CLAIM_UNVERIFIED",
+    "UNRESOLVED"
+  ],
+  "allowedReuseScopes": {
+    "PERMISSION_GRANTED": [
+      "DISPLAY_AND_DISTRIBUTION",
+      "DISPLAY_ONLY",
+      "INTERNAL_REVIEW_ONLY",
+      "NO_REUSE_APPROVED"
+    ],
+    "PUBLIC_DOMAIN_CLAIM_UNVERIFIED": [
+      "NO_REUSE_APPROVED"
+    ],
+    "RESTRICTED": [
+      "INTERNAL_REVIEW_ONLY",
+      "NO_REUSE_APPROVED"
+    ],
+    "UNRESOLVED": [
+      "NO_REUSE_APPROVED"
+    ]
+  },
+  "authorisedReviewerIds": [],
+  "forbiddenBroadAssertions": [
+    "ALL ANCIENT TEXTS ARE PUBLIC DOMAIN",
+    "COPYRIGHT FREE",
+    "FREE TO USE",
+    "NO COPYRIGHT",
+    "PUBLIC DOMAIN WORLDWIDE",
+    "ROYALTY FREE"
+  ]
+}
