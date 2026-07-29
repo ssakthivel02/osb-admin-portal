@@ -12,7 +12,7 @@ Every packet is non-production intake material. A packet must never:
 - contain credentials, private correspondence, unnecessary personal data, or medical instructions;
 - replace the preserved user-supplied devotional register.
 
-AI chat exports, research plans, generated code, search suggestions, synthetic reviewer identities, and unverified translations are working notes only. They are not archival witnesses, reviewer approvals, rights permissions, or completed evidence packets.
+AI chat exports, research plans, generated code, search suggestions, synthetic reviewer identities, generated legal conclusions, and unverified translations are working notes only. They are not archival witnesses, reviewer approvals, rights permissions, or completed evidence packets.
 
 ## Submission procedure
 
@@ -25,12 +25,15 @@ AI chat exports, research plans, generated code, search suggestions, synthetic r
 7. Calculate SHA-256 for every file and record the exact byte size and MIME type.
 8. Register each real reviewer in `config/siddhar-reviewer-governance.json` using a stable non-sensitive `SID-REV-*` ID, approved roles, a non-sensitive attestation reference, registration date, and conflict-of-interest declaration. Keep names, email addresses, phone numbers, private correspondence, and identity-mapping records outside the repository.
 9. Assign packet review roles only to active registered reviewers authorised for that role. The editorial approver must be different from every transcription, transliteration, and translation reviewer on the same packet.
-10. Keep all four declarations set to `true`.
-11. Run `npm run check:siddhar-submissions`.
-12. Run `npm run check:siddhar-files` to compare each declaration with the committed file bytes.
-13. Run `npm run check:siddhar-coverage` to ensure every controlled upload is owned by exactly one valid packet and every packet declaration resolves to one controlled upload.
-14. Run `npm run check:siddhar-reviewers` to validate reviewer IDs, role authorisation, review dates, assignment coverage, and separation of duties.
-15. Submit the packet and source files for human review. Do not edit the canonical manifest status during intake.
+10. Keep `UNRESOLVED` and `PUBLIC_DOMAIN_CLAIM_UNVERIFIED` rights at `NO_REUSE_APPROVED`, with no decision record or reviewer assignment.
+11. For `PERMISSION_GRANTED` or `RESTRICTED`, follow `../rights/README.md`, create one controlled `SID-RGT-DEC-*` record, and link the packet rights fields exactly to that decision.
+12. Keep all four packet declarations set to `true`.
+13. Run `npm run check:siddhar-submissions`.
+14. Run `npm run check:siddhar-files` to compare each source-file declaration with committed bytes.
+15. Run `npm run check:siddhar-coverage` to ensure every controlled source upload is owned by exactly one valid packet.
+16. Run `npm run check:siddhar-reviewers` to validate reviewer IDs, role authorisation, dates, assignment coverage, and separation of duties.
+17. Run `npm run check:siddhar-rights` to validate rights status, controlled decision provenance, authorised rights reviewers, permission evidence, expiry, and packet/decision reconciliation.
+18. Submit the packet and source files for human review. Do not edit the canonical manifest status during intake.
 
 ## Reviewer identity and separation of duties
 
@@ -44,30 +47,26 @@ The repository stores only non-sensitive reviewer governance metadata. A valid r
 - a unique `SID-REV-ATTEST-YYYYMMDD-NNN` attestation reference;
 - a real registration date.
 
-The governance gate rejects:
+The governance gate rejects synthetic, generic, AI-generated, test, dummy, or placeholder identities; unknown or inactive reviewers; assignments outside approved roles; invalid dates; contact details in the public registry; and one reviewer acting as both editorial approver and preparation reviewer on the same packet.
 
-- synthetic, generic, AI-generated, test, dummy, or placeholder identities;
-- packet reviewer values that do not use the stable reviewer-ID format;
-- references to reviewers absent from the registry;
-- inactive reviewers or reviewers without a conflict declaration;
-- assignments outside a reviewer's approved roles;
-- completed reviews without a real review date;
-- review dates in the future or before packet submission;
-- one reviewer holding both an editorial approval role and a preparation role in the same packet;
-- contact details or unexpected private-identity fields in the public registry.
+The gate does not prove that an individual is qualified or that an attestation is genuine. The governance owner must retain the real identity mapping, qualifications, signed declarations, and approval records outside the repository.
 
-The gate does not prove that an individual is qualified or that an attestation is genuine. The governance owner must retain the real identity mapping, qualifications, signed declarations, and approval records outside the public repository.
+## Rights decision provenance
+
+Rights metadata is fail-closed:
+
+- `UNRESOLVED` and `PUBLIC_DOMAIN_CLAIM_UNVERIFIED` permit only `NO_REUSE_APPROVED`;
+- `PERMISSION_GRANTED` requires an authorised rights reviewer, a controlled decision record, and a byte-verified permission document under `docs/content-intake/evidence/uploads/rights/`;
+- `RESTRICTED` requires an authorised rights reviewer and a controlled restriction decision;
+- broad statements such as “all ancient texts are public domain”, “copyright free”, or “free to use” are rejected;
+- expired permissions, missing files, hash mismatches, MIME disguises, orphan decisions, duplicate decision references, and packet/decision mismatches fail CI;
+- a rights decision never makes an item production eligible and never changes the evidence manifest.
+
+Real permission correspondence, signatures, contact details, private legal advice, and identity mappings must remain in an access-controlled system outside GitHub.
 
 ## Coverage ownership rule
 
-Every regular file under `docs/content-intake/evidence/uploads/` must be declared by exactly one valid `SID-SUB-*` packet. The coverage gate rejects:
-
-- orphan files with no valid packet declaration;
-- one path declared by more than one packet;
-- declarations pointing to missing files;
-- malformed or stale packets being used to satisfy coverage;
-- symbolic links or redirected upload directories;
-- unsupported file extensions inside the controlled uploads path.
+Every regular source file under `docs/content-intake/evidence/uploads/` must be declared by exactly one valid `SID-SUB-*` packet. The coverage gate rejects orphan files, duplicate ownership, missing declarations, unsafe paths, symbolic links, and unsupported extensions.
 
 An absent uploads directory and zero completed packets is a valid, truthful baseline. Uncovered manifest controls are reported for planning but do not fail CI until a packet or file is added incorrectly.
 
@@ -78,13 +77,13 @@ An absent uploads directory and zero completed packets is a valid, truthful base
 - PNG
 - TIFF
 
-Maximum file size is 100 MiB per file. The packet validator checks declared metadata. The file-integrity validator additionally checks that each path resolves inside the repository, exists as a regular non-symlink file, matches the declared byte size and SHA-256 digest, and has a PDF/JPEG/PNG/TIFF byte signature consistent with its extension and declared MIME type.
+Maximum file size is 100 MiB per file. The source-file integrity gate and rights-provenance gate both verify repository containment, regular-file status, byte size, SHA-256, extension, MIME declaration, and recognised PDF/JPEG/PNG/TIFF signatures for the files in their respective scopes.
 
-The coverage validator reconciles packet declarations, controlled uploads, and manifest controls. The reviewer-governance validator reconciles packet assignments with the non-sensitive reviewer registry and role-separation policy. None of these validators proves that a file is an authentic source, complete, correctly catalogued, legally reusable, accurately transcribed, or reviewed by a suitably qualified person.
+These validators do not independently prove source authenticity, ownership, legal validity, territorial coverage, textual correctness, translation quality, reviewer competence, or lawful publication.
 
 ## Manual review still required
 
-A successful validation result means only that the packet is structurally complete, safely linked to the evidence backlog, byte-consistent with the committed file, uniquely owns its controlled upload, and uses structurally valid reviewer assignments. Qualified reviewers must still examine:
+Qualified owners must still examine:
 
 - source identity and catalogue details;
 - folio, page, verse, and adjacent context;
@@ -92,10 +91,10 @@ A successful validation result means only that the packet is structurally comple
 - transliteration method;
 - English translation;
 - contradiction handling;
-- publication and image rights;
 - reviewer qualifications and conflicts;
-- final editorial status.
+- rights-holder identity, permission scope, territory, duration, and restrictions;
+- final editorial and publication status.
 
 ## Current repository state
 
-No completed evidence packet or registered reviewer is committed at present. This directory intentionally contains only this instruction file until real source material, reviewer attestations, and rights metadata are supplied.
+No completed evidence packet, registered reviewer, controlled rights decision, or permission document is committed at present. This directory intentionally contains only this instruction file until real source material, reviewer attestations, and rights evidence are supplied.
