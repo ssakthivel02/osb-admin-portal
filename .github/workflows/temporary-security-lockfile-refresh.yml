@@ -30,6 +30,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          npm install --global npm@11
+          npm --version
           npm ci --no-audit --no-fund
           npm install --save-exact --ignore-scripts --no-audit --no-fund \
             eslint@10.15.0 \
