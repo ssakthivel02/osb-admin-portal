@@ -18,6 +18,7 @@
     "check:siddhar-reviewers": "node scripts/check-siddhar-reviewer-governance.mjs",
     "check:siddhar-rights": "node scripts/check-siddhar-rights-provenance.mjs",
     "check:siddhar-editorial": "node scripts/check-siddhar-editorial-disposition.mjs",
+    "fingerprint:siddhar": "node scripts/print-siddhar-subject-fingerprint.mjs",
     "lint": "eslint . --max-warnings=0",
     "test": "vitest run",
     "test:ci": "vitest run --reporter=default --reporter=junit --outputFile=quality-evidence/junit.xml",
