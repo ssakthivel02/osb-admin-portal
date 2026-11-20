@@ -124,7 +124,12 @@ const rightsGovernance = {
 };
 const editorialGovernance = {
   schemaVersion: 1,
-  decisionIdPattern: '^SID-ED-DEC-[0-9]{8}-[0-9]{3}
+  decisionIdPattern: '^SID-ED-DEC-[0-9]{8}-[0-9]{3}$',
+  decisionPathPrefix: 'docs/content-intake/evidence/editorial/decisions/',
+  fingerprintAlgorithm: 'SHA256_CANONICAL_JSON_V1',
+  fingerprintPattern: '^sha256:[a-f0-9]{64}$',
+  noRightsDecisionFingerprint: 'NONE',
+  finalDispositions: [
     'CORRECTION_EVIDENCE_ONLY',
     'HOLD_FOR_REVIEW',
     'REJECT_EVIDENCE',
