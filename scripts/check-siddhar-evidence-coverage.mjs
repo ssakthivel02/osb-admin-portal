@@ -23,6 +23,7 @@ const submissionsDirectory = resolve(
 );
 const reportPath = resolve(repositoryRoot, 'quality-evidence/siddhar-evidence-coverage.json');
 const uploadPrefix = 'docs/content-intake/evidence/uploads/';
+const rightsUploadDirectory = 'docs/content-intake/evidence/uploads/rights';
 const packetIdPattern = /^SID-SUB-\d{8}-\d{3}$/;
 
 function isObject(value) {
@@ -148,6 +149,9 @@ function scanUploads(root, contract, issues) {
     for (const entry of entries) {
       const absolutePath = resolve(directory, entry.name);
       const path = toRepositoryPath(root, absolutePath);
+      if (path === rightsUploadDirectory || path.startsWith(`${rightsUploadDirectory}/`)) {
+        continue;
+      }
       let stats;
       try {
         stats = lstatSync(absolutePath);
