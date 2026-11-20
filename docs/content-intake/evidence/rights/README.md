@@ -25,6 +25,8 @@ docs/content-intake/evidence/uploads/rights/
 
 The `decisions/` directory may remain absent while there are no real decisions. The controlled permission-evidence directory may remain absent while there are no real permission documents.
 
+The `docs/content-intake/evidence/uploads/rights/` subtree is reserved for rights-permission evidence. The source-evidence coverage gate deliberately excludes this subtree; the rights-provenance gate owns it, scans it independently, and rejects orphan, unsafe, unsupported, or unreferenced rights files. Rights-permission files must not be added to a packet's source `files` array.
+
 ## Manual procedure
 
 1. Confirm the evidence packet already exists and remains non-production.
