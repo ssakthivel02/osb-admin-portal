@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "decisionId": "SID-RGT-DEC-YYYYMMDD-001",
+  "packetId": "SID-SUB-YYYYMMDD-001",
+  "manifestItemId": "SID-EV-000",
+  "rightsStatus": "PERMISSION_GRANTED",
+  "rightsReviewerId": "SID-REV-REPLACE1",
+  "decidedOn": "YYYY-MM-DD",
+  "rightsHolder": "REPLACE_WITH_DOCUMENTED_RIGHTS_HOLDER",
+  "basis": "REPLACE_WITH_ITEM_LEVEL_RIGHTS_BASIS",
+  "reuseScope": "DISPLAY_ONLY",
+  "permission": {
+    "recordId": "SID-RGT-PERM-YYYYMMDD-001",
+    "evidencePath": "docs/content-intake/evidence/uploads/rights/SID-RGT-PERM-YYYYMMDD-001.pdf",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "mimeType": "application/pdf",
+    "sizeBytes": 1,
+    "effectiveOn": "YYYY-MM-DD",
+    "expiresOn": null,
+    "scopeStatement": "REPLACE_WITH_EXACT_GRANTED_SCOPE"
+  },
+  "declarations": {
+    "noAutomaticStatusPromotion": true,
+    "noProductionUse": true,
+    "containsNoSecretsOrPersonalData": true,
+    "privateCorrespondenceStoredOutsideRepository": true
+  },
+  "notes": "Template only. For RESTRICTED decisions set permission to null. Do not use synthetic reviewers, placeholder permission data, or broad public-domain assertions."
+}

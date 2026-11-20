@@ -1,0 +1,12 @@
+# Default review ownership for this repository.
+# This routes every changed path to the repository owner until component-specific
+# maintainers are formally assigned and documented.
+* @ssakthivel02
+
+# Security- and delivery-sensitive repository controls remain explicitly owned.
+/.github/ @ssakthivel02
+/SECURITY.md @ssakthivel02
+/package.json @ssakthivel02
+/package-lock.json @ssakthivel02
+/tsconfig*.json @ssakthivel02
+/vite.config.ts @ssakthivel02

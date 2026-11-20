@@ -1,0 +1,446 @@
+{
+  "schemaVersion": 1,
+  "reviewDate": "2026-07-28",
+  "productionEligible": false,
+  "items": [
+    {
+      "id": "SID-EV-001",
+      "siddhar": "Thirumoolar",
+      "itemTitle": "Tirumantiram opening invocation",
+      "priority": "P1",
+      "scope": "ITEM",
+      "status": "SUPPORTED_ASSOCIATION",
+      "evidenceNeeded": [
+        "Claimed 1942 edition title page and publication metadata",
+        "Independent review of the submitted English meaning"
+      ],
+      "manualAction": "Supply the exact printed-edition pages for the publisher, editor, and verse metadata.",
+      "officialEvidence": [
+        {
+          "type": "OFFICIAL_TEXT_PORTAL",
+          "repository": "Tamil Virtual Academy",
+          "recordId": "Tirumantiram-opening-verse",
+          "title": "திருமந்திரம் — கடவுள் வாழ்த்து",
+          "locator": "Opening verse",
+          "url": "https://www.tamilvu.org/slet/l41A0/l4170uri.jsp?book_id=118&head_id=67&song_no=2&sub_id=2371",
+          "accessedOn": "2026-07-28"
+        }
+      ],
+      "blockingNote": "The text/source association is supported, but edition and translation claims remain incomplete.",
+      "productionEligible": false
+    },
+    {
+      "id": "SID-EV-002",
+      "siddhar": "Bogar",
+      "itemTitle": "Bogar 7000 work-level catalogue witness",
+      "priority": "P0",
+      "scope": "WORK",
+      "status": "WORK_CATALOGUE_VERIFIED",
+      "evidenceNeeded": [
+        "Manuscript folios containing each submitted mantra or verse",
+        "Independent transcription and translation review"
+      ],
+      "manualAction": "Request or photograph the relevant folios for the submitted Bogar moola mantra and dhyana sloka.",
+      "officialEvidence": [
+        {
+          "type": "OFFICIAL_MANUSCRIPT_CATALOGUE",
+          "repository": "Government Oriental Manuscripts Library",
+          "recordId": "TR 1016 / R 5664",
+          "title": "போகர் 7000",
+          "locator": "Official catalogue record",
+          "url": "https://www.tnarch.gov.in/goml/manuscripts/view/13615",
+          "accessedOn": "2026-07-28"
+        }
+      ],
+      "blockingNote": "The work exists in the catalogue; the submitted item text is not yet located in the manuscript.",
+      "productionEligible": false
+    },
+    {
+      "id": "SID-EV-003",
+      "siddhar": "Karuvoorar",
+      "itemTitle": "Submitted Thiruvisaippa attribution",
+      "priority": "P0",
+      "scope": "ITEM",
+      "status": "CONTRADICTED_DO_NOT_PUBLISH",
+      "evidenceNeeded": [
+        "Correct Ninth Tirumurai verse for the intended Karuvoorar item",
+        "Independent editorial correction record"
+      ],
+      "manualAction": "Do not publish the submitted line under Karuvoorar; supply the intended Ninth Tirumurai page and verse.",
+      "officialEvidence": [
+        {
+          "type": "OFFICIAL_TEXT_PORTAL",
+          "repository": "Tamil Virtual Academy",
+          "recordId": "Periyapuranam-opening-verse",
+          "title": "பெரியபுராணம்",
+          "locator": "Opening verse",
+          "url": "https://www.tamilvu.org/slet/l41C1/l41C1per.jsp?sno=1",
+          "accessedOn": "2026-07-28"
+        }
+      ],
+      "blockingNote": "The cited line is identified as the opening of Periyapuranam, associated with Sekkizhar.",
+      "productionEligible": false
+    },
+    {
+      "id": "SID-EV-004",
+      "siddhar": "Agastiyar",
+      "itemTitle": "Agastiyar Parippooranam 400 catalogue identifier",
+      "priority": "P0",
+      "scope": "WORK",
+      "status": "UNRESOLVED",
+      "evidenceNeeded": [
+        "Official GOML catalogue page or catalogue scan",
+        "Repository confirmation if the record is not online"
+      ],
+      "manualAction": "Obtain an official record showing title, bundle/work number, folios, script, status, and condition.",
+      "officialEvidence": [],
+      "blockingNote": "The exact submitted GOML R.No. 3215 identifier has not been independently confirmed.",
+      "productionEligible": false
+    },
+    {
+      "id": "SID-EV-005",
+      "siddhar": "Agastiyar",
+      "itemTitle": "Claimed 1899 printed edition",
+      "priority": "P0",
+      "scope": "EDITION",
+      "status": "UNRESOLVED",
+      "evidenceNeeded": [
+        "Title page",
+        "Colophon",
+        "Contents page",
+        "Publisher and editor statements"
+      ],
+      "manualAction": "Scan or photograph the front matter and bibliographic pages at readable resolution.",
+      "officialEvidence": [],
+      "blockingNote": "The Vidya Anupalana Press and Arumuga Navalar claims lack accessible edition images.",
+      "productionEligible": false
+    },
+    {
+      "id": "SID-EV-006",
+      "siddhar": "Agastiyar",
+      "itemTitle": "Invocation source page",
+      "priority": "P0",
+      "scope": "ITEM",
+      "status": "UNRESOLVED",
+      "evidenceNeeded": [
+        "Primary-source page containing the exact Tamil text",
+        "Page or verse locator",
+        "Independent transcription review"
+      ],
+      "manualAction": "Supply the verse page and one adjacent page to preserve context.",
+      "officialEvidence": [],
+      "blockingNote": "The exact wording and claimed verse-1 location are not authenticated.",
+      "productionEligible": false
+    },
+    {
+      "id": "SID-EV-007",
+      "siddhar": "Agastiyar",
+      "itemTitle": "Agastiyar Gayatri source",
+      "priority": "P1",
+      "scope": "ITEM",
+      "status": "UNRESOLVED",
+      "evidenceNeeded": [
+        "Exact text source",
+        "Edition and page or verse",
+        "Evidence for the claimed Puranic status"
+      ],
+      "manualAction": "Provide a scan from the cited stotra manual or an earlier source with complete publication details.",
+      "officialEvidence": [],
+      "blockingNote": "A modern devotional printing alone does not establish early scriptural status.",
+      "productionEligible": false
+    },
+    {
+      "id": "SID-EV-008",
+      "siddhar": "Agastiyar",
+      "itemTitle": "Papanasam 108 Potri handout",
+      "priority": "P1",
+      "scope": "TEMPLE_TRADITION",
+      "status": "UNRESOLVED",
+      "evidenceNeeded": [
+        "Official temple handout scan",
+        "Issue date and temple provenance",
+        "Authorisation or publication evidence"
+      ],
+      "manualAction": "Photograph the complete handout, cover, issue details, and any temple seal or notice.",
+      "officialEvidence": [],
+      "blockingNote": "Temple existence does not authenticate the submitted handout wording.",
+      "productionEligible": false
+    },
+    {
+      "id": "SID-EV-009",
+      "siddhar": "Bogar",
+      "itemTitle": "Submitted moola mantra folio",
+      "priority": "P0",
+      "scope": "ITEM",
+      "status": "UNRESOLVED",
+      "evidenceNeeded": [
+        "Exact manuscript folio or authorised printed page",
+        "Transcription review",
+        "Context around the line"
+      ],
+      "manualAction": "Locate the exact line in GOML TR 1016 / R 5664 or provide an authorised temple publication.",
+      "officialEvidence": [],
+      "blockingNote": "The work-level catalogue record does not prove the submitted item-level text.",
+      "productionEligible": false
+    },
+    {
+      "id": "SID-EV-010",
+      "siddhar": "Bogar",
+      "itemTitle": "Submitted dhyana sloka folio",
+      "priority": "P0",
+      "scope": "ITEM",
+      "status": "UNRESOLVED",
+      "evidenceNeeded": [
+        "Exact manuscript or printed page",
+        "Complete verse rather than only the opening phrase",
+        "Independent transliteration and translation review"
+      ],
+      "manualAction": "Supply the complete source page and identify whether it is manuscript, temple liturgy, or modern devotional composition.",
+      "officialEvidence": [],
+      "blockingNote": "The submitted phrase remains modern devotional unless a source witness is produced.",
+      "productionEligible": false
+    },
+    {
+      "id": "SID-EV-011",
+      "siddhar": "Bogar",
+      "itemTitle": "Palani temple liturgy link",
+      "priority": "P1",
+      "scope": "TEMPLE_TRADITION",
+      "status": "UNRESOLVED",
+      "evidenceNeeded": [
+        "Official Palani Devasthanam liturgy or authorised publication",
+        "Exact item wording and usage"
+      ],
+      "manualAction": "Request an official publication, temple booklet, or written confirmation from the authorised body.",
+      "officialEvidence": [],
+      "blockingNote": "Association with Palani cannot be inferred from the existence of Bogar 7000.",
+      "productionEligible": false
+    },
+    {
+      "id": "SID-EV-012",
+      "siddhar": "Korakkar",
+      "itemTitle": "Chandra Regai abstinence verse",
+      "priority": "P0",
+      "scope": "ITEM",
+      "status": "UNRESOLVED",
+      "evidenceNeeded": [
+        "Official catalogue record",
+        "Manuscript folio or verified edition page",
+        "Full verse context"
+      ],
+      "manualAction": "Supply the catalogue identifier and readable folio containing the exact line.",
+      "officialEvidence": [],
+      "blockingNote": "The repository record and item witness are not independently confirmed.",
+      "productionEligible": false
+    },
+    {
+      "id": "SID-EV-013",
+      "siddhar": "Pambatti Siddhar",
+      "itemTitle": "GOML R.No. 121 witness",
+      "priority": "P0",
+      "scope": "WORK",
+      "status": "UNRESOLVED",
+      "evidenceNeeded": [
+        "Official catalogue page or scan",
+        "Manuscript image containing the refrain",
+        "Folio locator"
+      ],
+      "manualAction": "Obtain the official record and the folio containing ஆடு பாம்பே - தெளிந்தாடு பாம்பே.",
+      "officialEvidence": [],
+      "blockingNote": "The exact record number has not been independently verified.",
+      "productionEligible": false
+    },
+    {
+      "id": "SID-EV-014",
+      "siddhar": "Karuvoorar",
+      "itemTitle": "Correct Ninth Tirumurai item",
+      "priority": "P0",
+      "scope": "ITEM",
+      "status": "UNRESOLVED",
+      "evidenceNeeded": [
+        "Ninth Tirumurai edition page",
+        "Exact verse number",
+        "Reviewer-confirmed Tamil text"
+      ],
+      "manualAction": "Select and document the intended Karuvoorar verse from a recognised Ninth Tirumurai edition.",
+      "officialEvidence": [],
+      "blockingNote": "A replacement must not be invented or silently substituted.",
+      "productionEligible": false
+    },
+    {
+      "id": "SID-EV-015",
+      "siddhar": "Sattaimuni",
+      "itemTitle": "Sattaimuni Nigandu 1200 invocation",
+      "priority": "P1",
+      "scope": "ITEM",
+      "status": "UNRESOLVED",
+      "evidenceNeeded": [
+        "Catalogue record or verified edition",
+        "Opening page or folio",
+        "Independent transcription review"
+      ],
+      "manualAction": "Supply the title page or catalogue entry and the exact opening source page.",
+      "officialEvidence": [],
+      "blockingNote": "The source claim remains unverified.",
+      "productionEligible": false
+    },
+    {
+      "id": "SID-EV-016",
+      "siddhar": "Konganar",
+      "itemTitle": "Konganar Vaakkiyam beejakshara",
+      "priority": "P1",
+      "scope": "ITEM",
+      "status": "UNRESOLVED",
+      "evidenceNeeded": [
+        "Catalogue record or verified edition",
+        "Exact page or folio",
+        "Context showing the claimed function"
+      ],
+      "manualAction": "Supply the source image and reviewer explanation of the textual context.",
+      "officialEvidence": [],
+      "blockingNote": "A standalone syllable cannot be authenticated without context and a locator.",
+      "productionEligible": false
+    },
+    {
+      "id": "SID-EV-017",
+      "siddhar": "Patanjali",
+      "itemTitle": "Yogena cittasya invocation",
+      "priority": "P2",
+      "scope": "ITEM",
+      "status": "UNRESOLVED",
+      "evidenceNeeded": [
+        "Exact edition and opening page",
+        "Attribution note",
+        "Transliteration standard"
+      ],
+      "manualAction": "Provide a recognised edition page showing the complete invocation and bibliographic details.",
+      "officialEvidence": [],
+      "blockingNote": "The precise textual location is not recorded in the intake.",
+      "productionEligible": false
+    },
+    {
+      "id": "SID-EV-018",
+      "siddhar": "Dhanvantari",
+      "itemTitle": "Dhanvantari Maha Mantra source",
+      "priority": "P1",
+      "scope": "ITEM",
+      "status": "UNRESOLVED",
+      "evidenceNeeded": [
+        "Exact Sanskrit or Tamil text",
+        "Bhagavata verse or Nighantu edition and page",
+        "Independent translation review"
+      ],
+      "manualAction": "Identify one precise source rather than a combined alternative citation.",
+      "officialEvidence": [],
+      "blockingNote": "The current citation is too broad to authenticate a specific mantra.",
+      "productionEligible": false
+    },
+    {
+      "id": "SID-EV-019",
+      "siddhar": "Nandidevar",
+      "itemTitle": "Nandi Agaval witness",
+      "priority": "P1",
+      "scope": "WORK",
+      "status": "UNRESOLVED",
+      "evidenceNeeded": [
+        "Exact work identity",
+        "Catalogue or edition record",
+        "Opening and closing lines",
+        "Folio or page range"
+      ],
+      "manualAction": "Determine whether the intended text is within Tirumantiram or a separate work and supply the corresponding witness.",
+      "officialEvidence": [],
+      "blockingNote": "Two possible source descriptions cannot be treated as one verified witness.",
+      "productionEligible": false
+    },
+    {
+      "id": "SID-EV-020",
+      "siddhar": "Multiple",
+      "itemTitle": "Pre-18th-century Sahasranamam absence claim",
+      "priority": "P2",
+      "scope": "RESEARCH_CLAIM",
+      "status": "UNRESOLVED",
+      "evidenceNeeded": [
+        "Search methodology",
+        "Catalogues consulted",
+        "Date ranges and search terms",
+        "Negative-result limitations"
+      ],
+      "manualAction": "Prepare a reproducible catalogue review rather than a universal unsupported statement.",
+      "officialEvidence": [],
+      "blockingNote": "Absence claims require documented exhaustive methodology.",
+      "productionEligible": false
+    },
+    {
+      "id": "SID-EV-021",
+      "siddhar": "Multiple",
+      "itemTitle": "Restricted Mala Mantra, Yantra, and Mudra claims",
+      "priority": "P2",
+      "scope": "RESEARCH_CLAIM",
+      "status": "UNRESOLVED",
+      "evidenceNeeded": [
+        "Named lineage or institutional source",
+        "Access-restriction statement",
+        "Scope and limitations"
+      ],
+      "manualAction": "Obtain written evidence from the relevant repository, temple, or recognised lineage authority.",
+      "officialEvidence": [],
+      "blockingNote": "Restricted-tradition claims must not be generalised without a named source.",
+      "productionEligible": false
+    },
+    {
+      "id": "SID-EV-022",
+      "siddhar": "All",
+      "itemTitle": "Transliteration and transcription review pack",
+      "priority": "P0",
+      "scope": "EDITORIAL_CONTROL",
+      "status": "UNRESOLVED",
+      "evidenceNeeded": [
+        "Declared transliteration standard",
+        "Named Tamil transcription reviewer",
+        "Named transliteration reviewer",
+        "Review dates"
+      ],
+      "manualAction": "Select a standard, review every item, and record reviewer decisions without silently rewriting the preserved intake.",
+      "officialEvidence": [],
+      "blockingNote": "Current spellings and transliterations are user-supplied and not yet standardised.",
+      "productionEligible": false
+    },
+    {
+      "id": "SID-EV-023",
+      "siddhar": "All",
+      "itemTitle": "Translation and word-by-word review pack",
+      "priority": "P0",
+      "scope": "EDITORIAL_CONTROL",
+      "status": "UNRESOLVED",
+      "evidenceNeeded": [
+        "Named translation reviewer",
+        "Item-level review notes",
+        "Disputed-term decisions",
+        "Review dates"
+      ],
+      "manualAction": "Review meanings against each verified source witness and retain a change log.",
+      "officialEvidence": [],
+      "blockingNote": "Interpretive meanings must not be presented as source-authenticated without review.",
+      "productionEligible": false
+    },
+    {
+      "id": "SID-EV-024",
+      "siddhar": "All",
+      "itemTitle": "Rights and editorial approval pack",
+      "priority": "P0",
+      "scope": "RIGHTS_CONTROL",
+      "status": "UNRESOLVED",
+      "evidenceNeeded": [
+        "Rights basis for each source image",
+        "Reuse permission reference",
+        "Named editorial reviewer",
+        "Final status decision"
+      ],
+      "manualAction": "Obtain permission or confirm public-domain basis and complete the existing provenance record before publication.",
+      "officialEvidence": [],
+      "blockingNote": "No item can move to production without rights and editorial approval.",
+      "productionEligible": false
+    }
+  ]
+}

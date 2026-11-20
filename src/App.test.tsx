@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
 import { App } from './App';
 
 describe('App', () => {
@@ -12,5 +13,38 @@ describe('App', () => {
     expect(
       screen.getByText('Blocked pending quality gates'),
     ).toBeInTheDocument();
+  });
+
+  it('exposes the status card through an accessible labelled region', () => {
+    render(<App />);
+
+    const statusRegion = screen.getByRole('region', {
+      name: /OmSaravanaBhava Admin Portal/i,
+    });
+
+    expect(
+      within(statusRegion).getByText('Verified implementation baseline'),
+    ).toBeInTheDocument();
+    expect(
+      within(statusRegion).getByText(/Authentication, API access, editorial workflows, learner persistence, and production AI remain intentionally disabled/i),
+    ).toBeInTheDocument();
+  });
+
+  it('keeps repository and production labels paired with their values', () => {
+    render(<App />);
+
+    expect(screen.getByText('Repository state').tagName).toBe('DT');
+    expect(screen.getByText('Executable scaffold').tagName).toBe('DD');
+    expect(screen.getByText('Production state').tagName).toBe('DT');
+    expect(screen.getByText('Blocked pending quality gates').tagName).toBe('DD');
+  });
+
+  it('renders the premium learning preview as an integrated page', () => {
+    render(<App />);
+
+    expect(screen.getByRole('navigation', { name: /primary navigation/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /useful every day for learners/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /quiz studio built around different ways of thinking/i })).toBeInTheDocument();
+    expect(screen.getByText('Premium non-production preview')).toBeInTheDocument();
   });
 });

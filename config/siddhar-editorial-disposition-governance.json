@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "decisionIdPattern": "^SID-ED-DEC-[0-9]{8}-[0-9]{3}$",
+  "decisionPathPrefix": "docs/content-intake/evidence/editorial/decisions/",
+  "fingerprintAlgorithm": "SHA256_CANONICAL_JSON_V1",
+  "fingerprintPattern": "^sha256:[a-f0-9]{64}$",
+  "noRightsDecisionFingerprint": "NONE",
+  "finalDispositions": [
+    "CORRECTION_EVIDENCE_ONLY",
+    "HOLD_FOR_REVIEW",
+    "REJECT_EVIDENCE",
+    "SOURCE_REVIEW_ONLY"
+  ],
+  "releaseCandidateDispositions": [
+    "SOURCE_REVIEW_ONLY"
+  ],
+  "contradictedManifestStatus": "CONTRADICTED_DO_NOT_PUBLISH",
+  "contradictedAllowedDispositions": [
+    "CORRECTION_EVIDENCE_ONLY",
+    "HOLD_FOR_REVIEW",
+    "REJECT_EVIDENCE"
+  ],
+  "requiredReviewRolesByDisposition": {
+    "CORRECTION_EVIDENCE_ONLY": [
+      "EDITORIAL"
+    ],
+    "HOLD_FOR_REVIEW": [
+      "EDITORIAL"
+    ],
+    "REJECT_EVIDENCE": [
+      "EDITORIAL"
+    ],
+    "SOURCE_REVIEW_ONLY": [
+      "EDITORIAL",
+      "TRANSCRIPTION",
+      "TRANSLATION",
+      "TRANSLITERATION"
+    ]
+  },
+  "allowedRightsStatesByDisposition": {
+    "CORRECTION_EVIDENCE_ONLY": [
+      "PERMISSION_GRANTED_REVIEWED",
+      "PUBLIC_DOMAIN_UNVERIFIED",
+      "RESTRICTED_REVIEWED",
+      "UNRESOLVED"
+    ],
+    "HOLD_FOR_REVIEW": [
+      "PERMISSION_GRANTED_REVIEWED",
+      "PUBLIC_DOMAIN_UNVERIFIED",
+      "RESTRICTED_REVIEWED",
+      "UNRESOLVED"
+    ],
+    "REJECT_EVIDENCE": [
+      "PERMISSION_GRANTED_REVIEWED",
+      "PUBLIC_DOMAIN_UNVERIFIED",
+      "RESTRICTED_REVIEWED",
+      "UNRESOLVED"
+    ],
+    "SOURCE_REVIEW_ONLY": [
+      "PERMISSION_GRANTED_REVIEWED",
+      "RESTRICTED_REVIEWED"
+    ]
+  },
+  "requiredPacketSubmissionStatus": "SUBMITTED_FOR_REVIEW",
+  "requiredDeclarations": [
+    "contradictionBlockAcknowledged",
+    "noAutomaticManifestChange",
+    "noProductionApproval",
+    "noPublicationClaim"
+  ],
+  "forbiddenDecisionFields": [
+    "approvedEditorialStatus",
+    "authenticatedStatus",
+    "newManifestStatus",
+    "productionApproved",
+    "productionEligible",
+    "productionStatus",
+    "publishApproved",
+    "releaseApproved"
+  ]
+}
