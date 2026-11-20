@@ -82,6 +82,7 @@ export function fingerprintSiddharSubjectFile({
   } catch (error) {
     throw new Error(
       `subject file must contain valid JSON: ${error instanceof Error ? error.message : 'parse error'}`,
+      { cause: error },
     );
   }
 
