@@ -9,6 +9,13 @@ import { validateSiddharEvidenceFileIntegrity } from './check-siddhar-evidence-f
 import { validateSiddharEvidenceCoverage } from './check-siddhar-evidence-coverage.mjs';
 import { validateSiddharReviewerGovernance } from './check-siddhar-reviewer-governance.mjs';
 import { validateSiddharRightsProvenance } from './check-siddhar-rights-provenance.mjs';
+import {
+  SIDDHAR_NO_RIGHTS_DECISION_FINGERPRINT,
+  SIDDHAR_SUBJECT_FINGERPRINT_ALGORITHM,
+  SIDDHAR_SUBJECT_FINGERPRINT_PATTERN,
+  fingerprintCanonicalJson,
+  isSiddharSubjectFingerprint,
+} from './siddhar-subject-fingerprint.mjs';
 
 const scriptDirectory = dirname(fileURLToPath(import.meta.url));
 const repositoryRoot = resolve(scriptDirectory, '..');
@@ -68,12 +75,15 @@ const DECISION_FIELDS = [
   'finalDisposition',
   'manifestItemId',
   'manifestStatusObserved',
+  'packetFingerprint',
   'packetId',
   'packetProposedDispositionObserved',
   'packetSubmissionStatusObserved',
+  'rightsDecisionFingerprint',
   'rightsDecisionIdObserved',
   'rightsStatusObserved',
   'schemaVersion',
+  'subjectFingerprintAlgorithm',
 ];
 const PACKET_ID = /^SID-SUB-\d{8}-\d{3}$/;
 const MANIFEST_ID = /^SID-EV-\d{3}$/;
@@ -231,6 +241,9 @@ export function parseSiddharEditorialDispositionGovernance({
     schemaVersion: 1,
     decisionIdPattern: /a^/,
     decisionPathPrefix: EXPECTED_DECISION_PREFIX,
+    fingerprintAlgorithm: SIDDHAR_SUBJECT_FINGERPRINT_ALGORITHM,
+    fingerprintPattern: SIDDHAR_SUBJECT_FINGERPRINT_PATTERN,
+    noRightsDecisionFingerprint: SIDDHAR_NO_RIGHTS_DECISION_FINGERPRINT,
     finalDispositions: [],
     releaseCandidateDispositions: [],
     contradictedManifestStatus: 'CONTRADICTED_DO_NOT_PUBLISH',
@@ -264,6 +277,30 @@ export function parseSiddharEditorialDispositionGovernance({
       path,
       'decisionPathPrefix',
       `must remain ${EXPECTED_DECISION_PREFIX}`,
+    );
+  }
+  if (document.fingerprintAlgorithm !== SIDDHAR_SUBJECT_FINGERPRINT_ALGORITHM) {
+    addIssue(
+      issues,
+      path,
+      'fingerprintAlgorithm',
+      `must remain ${SIDDHAR_SUBJECT_FINGERPRINT_ALGORITHM}`,
+    );
+  }
+  if (document.fingerprintPattern !== SIDDHAR_SUBJECT_FINGERPRINT_PATTERN.source) {
+    addIssue(
+      issues,
+      path,
+      'fingerprintPattern',
+      `must remain ${SIDDHAR_SUBJECT_FINGERPRINT_PATTERN.source}`,
+    );
+  }
+  if (document.noRightsDecisionFingerprint !== SIDDHAR_NO_RIGHTS_DECISION_FINGERPRINT) {
+    addIssue(
+      issues,
+      path,
+      'noRightsDecisionFingerprint',
+      `must remain ${SIDDHAR_NO_RIGHTS_DECISION_FINGERPRINT}`,
     );
   }
 
@@ -462,6 +499,9 @@ export function parseSiddharEditorialDispositionGovernance({
     schemaVersion: 1,
     decisionIdPattern,
     decisionPathPrefix: EXPECTED_DECISION_PREFIX,
+    fingerprintAlgorithm: SIDDHAR_SUBJECT_FINGERPRINT_ALGORITHM,
+    fingerprintPattern: SIDDHAR_SUBJECT_FINGERPRINT_PATTERN,
+    noRightsDecisionFingerprint: SIDDHAR_NO_RIGHTS_DECISION_FINGERPRINT,
     finalDispositions,
     releaseCandidateDispositions,
     contradictedManifestStatus: 'CONTRADICTED_DO_NOT_PUBLISH',
@@ -527,9 +567,34 @@ function buildPacketMap(packetFiles, issues) {
       );
       continue;
     }
-    packetsById.set(packet.packetId, { ...packet, path: packetFile.path });
+    packetsById.set(packet.packetId, {
+      ...packet,
+      path: packetFile.path,
+      _subjectFingerprint: fingerprintCanonicalJson(packet),
+    });
   }
   return packetsById;
+}
+
+function buildRightsDecisionMap(rightsDecisionFiles) {
+  const decisionsById = new Map();
+  for (const decisionFile of [...rightsDecisionFiles].sort((left, right) =>
+    left.path.localeCompare(right.path),
+  )) {
+    if (decisionFile.parseError !== undefined || !isObject(decisionFile.value)) {
+      continue;
+    }
+    const decisionId = decisionFile.value.decisionId;
+    if (!isNonEmptyString(decisionId) || decisionsById.has(decisionId)) {
+      continue;
+    }
+    decisionsById.set(decisionId, {
+      path: decisionFile.path,
+      value: decisionFile.value,
+      fingerprint: fingerprintCanonicalJson(decisionFile.value),
+    });
+  }
+  return decisionsById;
 }
 
 function reviewerIsAuthorisedEditorial(reviewer) {
@@ -634,11 +699,13 @@ function validateEditorialDecision({
   governance,
   manifestItems,
   packetsById,
+  rightsDecisionsById,
   submissionContract,
   today,
   issues,
   counters,
   decisionsByPacket,
+  fingerprintAssessments,
 }) {
   const path = decisionFile.path;
   const initialIssueCount = issues.length;
@@ -659,6 +726,9 @@ function validateEditorialDecision({
   const manifestItemId = isNonEmptyString(decision.manifestItemId)
     ? decision.manifestItemId
     : null;
+  let packetFingerprintFresh = false;
+  let rightsDecisionFingerprintFresh = false;
+  let fingerprintState = 'INVALID';
 
   for (const field of Object.keys(decision)) {
     if (!DECISION_FIELDS.includes(field)) {
@@ -693,6 +763,45 @@ function validateEditorialDecision({
       path,
       'schemaVersion',
       `must be ${governance.schemaVersion}`,
+      packetId,
+      manifestItemId,
+      decisionId,
+    );
+  }
+  if (decision.subjectFingerprintAlgorithm !== governance.fingerprintAlgorithm) {
+    counters.malformedFingerprintCount += 1;
+    addIssue(
+      issues,
+      path,
+      'subjectFingerprintAlgorithm',
+      `must be ${governance.fingerprintAlgorithm}`,
+      packetId,
+      manifestItemId,
+      decisionId,
+    );
+  }
+  if (!isSiddharSubjectFingerprint(decision.packetFingerprint)) {
+    counters.malformedFingerprintCount += 1;
+    addIssue(
+      issues,
+      path,
+      'packetFingerprint',
+      'must be a lowercase sha256 canonical-JSON fingerprint',
+      packetId,
+      manifestItemId,
+      decisionId,
+    );
+  }
+  if (
+    decision.rightsDecisionFingerprint !== governance.noRightsDecisionFingerprint &&
+    !isSiddharSubjectFingerprint(decision.rightsDecisionFingerprint)
+  ) {
+    counters.malformedFingerprintCount += 1;
+    addIssue(
+      issues,
+      path,
+      'rightsDecisionFingerprint',
+      `must be a lowercase sha256 canonical-JSON fingerprint or ${governance.noRightsDecisionFingerprint}`,
       packetId,
       manifestItemId,
       decisionId,
@@ -940,6 +1049,72 @@ function validateEditorialDecision({
       );
     }
 
+    const currentPacketFingerprint = packet._subjectFingerprint;
+    if (
+      isSiddharSubjectFingerprint(decision.packetFingerprint) &&
+      decision.packetFingerprint === currentPacketFingerprint
+    ) {
+      packetFingerprintFresh = true;
+    } else if (isSiddharSubjectFingerprint(decision.packetFingerprint)) {
+      counters.stalePacketFingerprintCount += 1;
+      addIssue(
+        issues,
+        path,
+        'packetFingerprint',
+        'is stale because the canonical evidence packet changed after editorial sign-off',
+        packetId,
+        manifestItemId,
+        decisionId,
+      );
+    }
+
+    const rightsDecisionId = packet.rights?.decisionId;
+    let currentRightsDecisionFingerprint = governance.noRightsDecisionFingerprint;
+    if (
+      isNonEmptyString(rightsDecisionId) &&
+      rightsDecisionId !== 'UNRESOLVED'
+    ) {
+      const rightsDecision = rightsDecisionsById.get(rightsDecisionId);
+      if (rightsDecision === undefined) {
+        addIssue(
+          issues,
+          path,
+          'rightsDecisionFingerprint',
+          'cannot resolve the packet rights decision for subject fingerprint verification',
+          packetId,
+          manifestItemId,
+          decisionId,
+        );
+      } else {
+        currentRightsDecisionFingerprint = rightsDecision.fingerprint;
+      }
+    }
+
+    if (
+      (decision.rightsDecisionFingerprint === governance.noRightsDecisionFingerprint ||
+        isSiddharSubjectFingerprint(decision.rightsDecisionFingerprint)) &&
+      decision.rightsDecisionFingerprint === currentRightsDecisionFingerprint
+    ) {
+      rightsDecisionFingerprintFresh = true;
+    } else if (
+      decision.rightsDecisionFingerprint === governance.noRightsDecisionFingerprint ||
+      isSiddharSubjectFingerprint(decision.rightsDecisionFingerprint)
+    ) {
+      counters.staleRightsDecisionFingerprintCount += 1;
+      addIssue(
+        issues,
+        path,
+        'rightsDecisionFingerprint',
+        'is stale because the referenced rights decision changed after editorial sign-off',
+        packetId,
+        manifestItemId,
+        decisionId,
+      );
+    }
+
+    fingerprintState =
+      packetFingerprintFresh && rightsDecisionFingerprintFresh ? 'FRESH' : 'STALE';
+
     const snapshots = [
       ['manifestStatusObserved', manifestItem.status],
       ['packetSubmissionStatusObserved', packet.submissionStatus],
@@ -1117,6 +1292,18 @@ function validateEditorialDecision({
     }
   }
 
+  if (packet === undefined) {
+    fingerprintState = 'INVALID';
+  }
+  fingerprintAssessments.push({
+    decisionId,
+    packetId,
+    manifestItemId,
+    fingerprintState,
+    packetFingerprintFresh,
+    rightsDecisionFingerprintFresh,
+  });
+
   if (packetId !== null) {
     const decisions = decisionsByPacket.get(packetId) ?? [];
     decisions.push(decisionId ?? path);
@@ -1203,6 +1390,9 @@ export function validateSiddharEditorialDisposition({
     rightsDispositionConflictCount: 0,
     contradictionBlockCount: 0,
     duplicatePacketDecisionCount: 0,
+    malformedFingerprintCount: 0,
+    stalePacketFingerprintCount: 0,
+    staleRightsDecisionFingerprintCount: 0,
   };
 
   if (!isIsoDate(today)) {
@@ -1217,6 +1407,7 @@ export function validateSiddharEditorialDisposition({
   });
   const manifestItems = buildManifestMap(manifest, issues);
   const packetsById = buildPacketMap(packetFiles, issues);
+  const rightsDecisionsById = buildRightsDecisionMap(rightsDecisionFiles);
   const upstream = validateUpstream({
     manifest,
     packetFiles,
@@ -1231,6 +1422,7 @@ export function validateSiddharEditorialDisposition({
 
   const decisionsByPacket = new Map();
   const validDecisions = [];
+  const fingerprintAssessments = [];
   const seenDecisionIds = new Set();
 
   for (const decisionFile of [...editorialDecisionFiles].sort((left, right) =>
@@ -1260,11 +1452,13 @@ export function validateSiddharEditorialDisposition({
         governance,
         manifestItems,
         packetsById,
+        rightsDecisionsById,
         submissionContract,
         today,
         issues,
         counters,
         decisionsByPacket,
+        fingerprintAssessments,
       }),
     );
   }
@@ -1328,6 +1522,56 @@ export function validateSiddharEditorialDisposition({
     ),
   );
 
+  const fingerprintCoverageByManifestItem = [...manifestItems.values()]
+    .map((manifestItem) => {
+      const assessments = fingerprintAssessments.filter(
+        (assessment) => assessment.manifestItemId === manifestItem.id,
+      );
+      const freshDecisionCount = assessments.filter(
+        (assessment) => assessment.fingerprintState === 'FRESH',
+      ).length;
+      const staleDecisionCount = assessments.filter(
+        (assessment) => assessment.fingerprintState === 'STALE',
+      ).length;
+      const invalidDecisionCount = assessments.filter(
+        (assessment) => assessment.fingerprintState === 'INVALID',
+      ).length;
+      let fingerprintState = 'NO_DECISION';
+      if (staleDecisionCount > 0) {
+        fingerprintState = 'STALE';
+      } else if (invalidDecisionCount > 0) {
+        fingerprintState = 'INVALID';
+      } else if (freshDecisionCount > 0) {
+        fingerprintState = 'FRESH';
+      }
+      return {
+        manifestItemId: manifestItem.id,
+        siddhar: manifestItem.siddhar,
+        priority: manifestItem.priority,
+        decisionCount: assessments.length,
+        freshDecisionCount,
+        staleDecisionCount,
+        invalidDecisionCount,
+        fingerprintState,
+      };
+    })
+    .sort((left, right) => left.manifestItemId.localeCompare(right.manifestItemId));
+
+  const fingerprintCounts = {
+    FRESH: fingerprintAssessments.filter(
+      (assessment) => assessment.fingerprintState === 'FRESH',
+    ).length,
+    STALE: fingerprintAssessments.filter(
+      (assessment) => assessment.fingerprintState === 'STALE',
+    ).length,
+    INVALID: fingerprintAssessments.filter(
+      (assessment) => assessment.fingerprintState === 'INVALID',
+    ).length,
+    NO_DECISION: fingerprintCoverageByManifestItem.filter(
+      (item) => item.fingerprintState === 'NO_DECISION',
+    ).length,
+  };
+
   return {
     ok: issues.length === 0,
     governanceSchemaVersion: governance.schemaVersion,
@@ -1345,6 +1589,13 @@ export function validateSiddharEditorialDisposition({
     rightsDispositionConflictCount: counters.rightsDispositionConflictCount,
     contradictionBlockCount: counters.contradictionBlockCount,
     duplicatePacketDecisionCount: counters.duplicatePacketDecisionCount,
+    malformedFingerprintCount: counters.malformedFingerprintCount,
+    stalePacketFingerprintCount: counters.stalePacketFingerprintCount,
+    staleRightsDecisionFingerprintCount: counters.staleRightsDecisionFingerprintCount,
+    freshFingerprintDecisionCount: fingerprintCounts.FRESH,
+    staleFingerprintDecisionCount: fingerprintCounts.STALE,
+    invalidFingerprintDecisionCount: fingerprintCounts.INVALID,
+    noDecisionFingerprintManifestItems: fingerprintCounts.NO_DECISION,
     nonProductionReadyManifestItems: readinessByManifestItem.filter(
       (item) => item.readinessState === 'NONPRODUCTION_READY',
     ).length,
@@ -1365,6 +1616,9 @@ export function validateSiddharEditorialDisposition({
     automaticManifestChanges: 0,
     productionEligibleItems: 0,
     publicationApprovals: 0,
+    fingerprintAlgorithm: governance.fingerprintAlgorithm,
+    fingerprintCounts,
+    fingerprintCoverageByManifestItem,
     readinessByManifestItem,
     issues: issues.sort((left, right) =>
       `${left.path}:${left.field}:${left.message}`.localeCompare(
@@ -1420,6 +1674,7 @@ function run() {
 
   console.log(
     `Siddhar editorial disposition passed: ${result.validEditorialDecisionCount}/${result.editorialDecisionFileCount} decisions valid, ` +
+      `${result.freshFingerprintDecisionCount} fresh / ${result.staleFingerprintDecisionCount} stale subject fingerprints, ` +
       `${result.nonProductionReadyManifestItems}/${result.manifestItemCount} manifest items non-production ready, ` +
       `${result.contradictedBlockedManifestItems} contradicted items blocked, ` +
       '0 automatic manifest changes, 0 production-eligible items, 0 publication approvals.',
