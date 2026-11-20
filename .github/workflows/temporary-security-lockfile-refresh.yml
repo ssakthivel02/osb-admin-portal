@@ -30,12 +30,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npm install --package-lock-only --save-exact --ignore-scripts --no-audit --no-fund \
+          npm ci --no-audit --no-fund
+          npm install --save-exact --ignore-scripts --no-audit --no-fund \
             eslint@10.15.0 \
             typescript-eslint@8.73.0 \
             vite@8.3.8 \
             vitest@4.1.12
-          npm audit fix --package-lock-only --ignore-scripts --no-fund
+          npm audit fix --ignore-scripts --no-fund
           npm audit --audit-level=high
 
       - name: Commit dependency security refresh
