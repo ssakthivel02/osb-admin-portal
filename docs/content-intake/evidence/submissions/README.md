@@ -34,6 +34,9 @@ AI chat exports, research plans, generated code, search suggestions, synthetic r
 16. Run `npm run check:siddhar-reviewers` to validate reviewer IDs, role authorisation, dates, assignment coverage, and separation of duties.
 17. Run `npm run check:siddhar-rights` to validate rights status, controlled decision provenance, authorised rights reviewers, permission evidence, expiry, and packet/decision reconciliation.
 18. Submit the packet and source files for human review. Do not edit the canonical manifest status during intake.
+19. After the required human reviews are complete, follow `../editorial/README.md` to record one controlled non-production `SID-ED-DEC-*` editorial decision.
+20. Run `npm run check:siddhar-editorial` to reconcile the decision with the packet, current manifest, completed reviews, rights provenance, source-file integrity, and source coverage.
+21. Keep the canonical manifest and application data unchanged until a separately authorised release process exists.
 
 ## Reviewer identity and separation of duties
 
@@ -66,7 +69,7 @@ Real permission correspondence, signatures, contact details, private legal advic
 
 ## Coverage ownership rule
 
-Every regular source file under `docs/content-intake/evidence/uploads/` must be declared by exactly one valid `SID-SUB-*` packet. The coverage gate rejects orphan files, duplicate ownership, missing declarations, unsafe paths, symbolic links, and unsupported extensions.
+Every regular source file under `docs/content-intake/evidence/uploads/` must be declared by exactly one valid `SID-SUB-*` packet, except the reserved `docs/content-intake/evidence/uploads/rights/` subtree. Rights-permission evidence in that reserved subtree is owned exclusively by the rights-provenance gate. The source-coverage gate rejects orphan source files, duplicate ownership, missing declarations, unsafe paths, symbolic links, and unsupported extensions.
 
 An absent uploads directory and zero completed packets is a valid, truthful baseline. Uncovered manifest controls are reported for planning but do not fail CI until a packet or file is added incorrectly.
 
@@ -97,4 +100,4 @@ Qualified owners must still examine:
 
 ## Current repository state
 
-No completed evidence packet, registered reviewer, controlled rights decision, or permission document is committed at present. This directory intentionally contains only this instruction file until real source material, reviewer attestations, and rights evidence are supplied.
+No completed evidence packet, registered reviewer, controlled rights decision, permission document, or controlled editorial decision is committed at present. This directory intentionally contains only this instruction file until real source material, reviewer attestations, rights evidence, and human editorial decisions are supplied.
