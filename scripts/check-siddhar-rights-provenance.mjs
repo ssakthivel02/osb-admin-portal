@@ -144,6 +144,118 @@ function containsPlaceholder(value) {
   return isNonEmptyString(value) && PLACEHOLDER_LANGUAGE.test(value);
 }
 
+function scanRightsUploads({ root, contract, issues }) {
+  const uploadsRoot = resolve(root, 'docs/content-intake/evidence/uploads/rights');
+  if (!existsSync(uploadsRoot)) {
+    return [];
+  }
+
+  let uploadsStats;
+  try {
+    uploadsStats = lstatSync(uploadsRoot);
+  } catch (error) {
+    addIssue(
+      issues,
+      'docs/content-intake/evidence/uploads/rights',
+      'path',
+      `could not inspect rights uploads directory: ${error instanceof Error ? error.message : 'unknown error'}`,
+    );
+    return [];
+  }
+
+  if (uploadsStats.isSymbolicLink()) {
+    addIssue(
+      issues,
+      'docs/content-intake/evidence/uploads/rights',
+      'path',
+      'rights uploads directory must not be a symbolic link',
+    );
+    return [];
+  }
+  if (!uploadsStats.isDirectory()) {
+    addIssue(
+      issues,
+      'docs/content-intake/evidence/uploads/rights',
+      'path',
+      'rights uploads path must be a directory',
+    );
+    return [];
+  }
+
+  const rootReal = realpathSync(root);
+  const uploadsReal = realpathSync(uploadsRoot);
+  if (!isContainedPath(rootReal, uploadsReal)) {
+    addIssue(
+      issues,
+      'docs/content-intake/evidence/uploads/rights',
+      'path',
+      'rights uploads directory must resolve inside the repository root',
+    );
+    return [];
+  }
+
+  const files = [];
+  function visit(directory) {
+    const entries = readdirSync(directory, { withFileTypes: true }).sort((left, right) =>
+      left.name.localeCompare(right.name),
+    );
+    for (const entry of entries) {
+      const absolutePath = resolve(directory, entry.name);
+      const path = repositoryPath(root, absolutePath);
+      let stats;
+      try {
+        stats = lstatSync(absolutePath);
+      } catch (error) {
+        addIssue(
+          issues,
+          path,
+          'path',
+          `could not inspect rights upload entry: ${error instanceof Error ? error.message : 'unknown error'}`,
+        );
+        continue;
+      }
+      if (stats.isSymbolicLink()) {
+        addIssue(issues, path, 'path', 'symbolic links are forbidden in the rights uploads directory');
+        continue;
+      }
+      if (stats.isDirectory()) {
+        visit(absolutePath);
+        continue;
+      }
+      if (!stats.isFile()) {
+        addIssue(issues, path, 'path', 'only regular files and directories are allowed');
+        continue;
+      }
+
+      let resolvedFile;
+      try {
+        resolvedFile = realpathSync(absolutePath);
+      } catch (error) {
+        addIssue(
+          issues,
+          path,
+          'path',
+          `could not resolve rights upload file: ${error instanceof Error ? error.message : 'unknown error'}`,
+        );
+        continue;
+      }
+      if (!isContainedPath(uploadsReal, resolvedFile)) {
+        addIssue(issues, path, 'path', 'rights upload file must resolve inside the controlled rights directory');
+        continue;
+      }
+
+      const extension = extname(path).toLowerCase();
+      if (!contract.allowedFileExtensions.includes(extension) || MIME_BY_EXTENSION[extension] === undefined) {
+        addIssue(issues, path, 'extension', 'is not an approved rights-evidence extension');
+      }
+      files.push(path);
+    }
+  }
+
+  visit(uploadsRoot);
+  return files.sort((left, right) => left.localeCompare(right));
+}
+
 function buildManifestMap(manifest, issues) {
   const path = 'docs/content-intake/evidence/siddhar-evidence-manifest.json';
   const items = new Map();
@@ -1114,6 +1226,8 @@ export function validateSiddharRightsProvenance({
     missingDecisionReferenceCount: 0,
     orphanDecisionCount: 0,
     duplicateDecisionReferenceCount: 0,
+    rightsUploadFileCount: 0,
+    orphanPermissionEvidenceCount: 0,
     packetRightsStatusCounts: Object.fromEntries(
       submissionContract.rightsStatuses.map((status) => [status, 0]),
     ),
@@ -1122,6 +1236,13 @@ export function validateSiddharRightsProvenance({
   if (!isIsoDate(today)) {
     addIssue(issues, '(runtime)', 'today', 'must use a real YYYY-MM-DD date');
   }
+
+  const rightsUploadFiles = scanRightsUploads({
+    root: repositoryRootPath,
+    contract: submissionContract,
+    issues,
+  });
+  counters.rightsUploadFileCount = rightsUploadFiles.length;
 
   const decisionsById = validateDecisionFiles({
     decisionFiles,
@@ -1168,6 +1289,23 @@ export function validateSiddharRightsProvenance({
     }
   }
 
+  const referencedPermissionEvidencePaths = new Set(
+    [...decisionsById.values()]
+      .map((decision) => decision.permissionSummary?.evidencePath)
+      .filter((path) => isNonEmptyString(path)),
+  );
+  for (const path of rightsUploadFiles) {
+    if (!referencedPermissionEvidencePaths.has(path)) {
+      counters.orphanPermissionEvidenceCount += 1;
+      addIssue(
+        issues,
+        path,
+        'coverage',
+        'rights evidence file is orphaned and must be referenced by exactly one valid permission decision',
+      );
+    }
+  }
+
   const rightsCoverageByManifestItem = [...manifestItems.values()]
     .map((item) => {
       const states = summariesByManifest.get(item.id) ?? [];
@@ -1210,6 +1348,8 @@ export function validateSiddharRightsProvenance({
     missingDecisionReferenceCount: counters.missingDecisionReferenceCount,
     orphanDecisionCount: counters.orphanDecisionCount,
     duplicateDecisionReferenceCount: counters.duplicateDecisionReferenceCount,
+    rightsUploadFileCount: counters.rightsUploadFileCount,
+    orphanPermissionEvidenceCount: counters.orphanPermissionEvidenceCount,
     packetRightsStatusCounts: counters.packetRightsStatusCounts,
     reviewedManifestItems,
     nonProductionManifestItems,
@@ -1269,7 +1409,7 @@ function run() {
   console.log(
     `Siddhar rights provenance passed: ${result.authorisedRightsReviewerCount} authorised reviewers, ` +
       `${result.validDecisionCount}/${result.decisionFileCount} decisions valid, ` +
-      `${result.permissionEvidenceFileCount} permission evidence files verified, ` +
+      `${result.permissionEvidenceFileCount}/${result.rightsUploadFileCount} permission evidence files verified, ` +
       `${result.reviewedManifestItems}/${result.manifestItemCount} manifest items rights-reviewed, ` +
       '0 automatic status changes, 0 production-eligible items.',
   );
