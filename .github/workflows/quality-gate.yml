@@ -132,6 +132,18 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+      - name: Validate Siddhar editorial disposition provenance
+        run: npm run check:siddhar-editorial
+
+      - name: Upload Siddhar editorial disposition report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: siddhar-editorial-disposition-report
+          path: quality-evidence/siddhar-editorial-disposition.json
+          if-no-files-found: error
+          retention-days: 7
+
       - name: Lint
         shell: bash
         run: |
