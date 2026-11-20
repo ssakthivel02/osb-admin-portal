@@ -1605,7 +1605,9 @@ export function validateSiddharEditorialDisposition({
     staleRightsDecisionFingerprintCount: counters.staleRightsDecisionFingerprintCount,
     freshFingerprintDecisionCount: fingerprintCounts.FRESH,
     staleFingerprintDecisionCount: fingerprintCounts.STALE,
-    invalidFingerprintDecisionCount: fingerprintCounts.INVALID,
+    invalidFingerprintDecisionCount:
+      fingerprintCounts.INVALID + counters.malformedDecisionCount,
+    unscopedInvalidFingerprintDecisionCount: counters.malformedDecisionCount,
     noDecisionFingerprintManifestItems: fingerprintCounts.NO_DECISION,
     nonProductionReadyManifestItems: readinessByManifestItem.filter(
       (item) => item.readinessState === 'NONPRODUCTION_READY',
