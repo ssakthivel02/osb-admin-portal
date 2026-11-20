@@ -1549,6 +1549,8 @@ describe('Siddhar editorial disposition provenance', () => {
 
     expect(result.ok).toBe(false);
     expect(result.malformedDecisionCount).toBe(1);
+    expect(result.invalidFingerprintDecisionCount).toBe(1);
+    expect(result.unscopedInvalidFingerprintDecisionCount).toBe(1);
   });
 
   it('rejects governance drift in canonical dispositions', () => {
