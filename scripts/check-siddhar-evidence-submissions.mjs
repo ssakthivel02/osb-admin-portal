@@ -323,8 +323,12 @@ function validateReviews(packet, contract, path, issues) {
       addIssue(issues, rolePath, 'notes', 'must justify why the review role is not applicable');
     }
 
-    if (packet.submissionStatus === 'SUBMITTED_FOR_REVIEW' && roleReview.reviewer === 'UNASSIGNED') {
-      addIssue(issues, rolePath, 'reviewer', 'must be assigned before submission for review');
+    if (
+      packet.submissionStatus === 'SUBMITTED_FOR_REVIEW' &&
+      roleReview.reviewer === 'UNASSIGNED' &&
+      roleReview.status !== 'NOT_APPLICABLE'
+    ) {
+      addIssue(issues, rolePath, 'reviewer', 'must be assigned before submission for review unless the role is not applicable');
     }
   }
 }
