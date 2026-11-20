@@ -726,8 +726,14 @@ function validateEditorialDecision({
   const manifestItemId = isNonEmptyString(decision.manifestItemId)
     ? decision.manifestItemId
     : null;
+  const fingerprintStructureValid =
+    decision.subjectFingerprintAlgorithm === governance.fingerprintAlgorithm &&
+    isSiddharSubjectFingerprint(decision.packetFingerprint) &&
+    (decision.rightsDecisionFingerprint === governance.noRightsDecisionFingerprint ||
+      isSiddharSubjectFingerprint(decision.rightsDecisionFingerprint));
   let packetFingerprintFresh = false;
   let rightsDecisionFingerprintFresh = false;
+  let rightsDecisionResolved = true;
   let fingerprintState = 'INVALID';
 
   for (const field of Object.keys(decision)) {
@@ -1076,6 +1082,7 @@ function validateEditorialDecision({
     ) {
       const rightsDecision = rightsDecisionsById.get(rightsDecisionId);
       if (rightsDecision === undefined) {
+        rightsDecisionResolved = false;
         addIssue(
           issues,
           path,
@@ -1113,7 +1120,11 @@ function validateEditorialDecision({
     }
 
     fingerprintState =
-      packetFingerprintFresh && rightsDecisionFingerprintFresh ? 'FRESH' : 'STALE';
+      fingerprintStructureValid && rightsDecisionResolved
+        ? packetFingerprintFresh && rightsDecisionFingerprintFresh
+          ? 'FRESH'
+          : 'STALE'
+        : 'INVALID';
 
     const snapshots = [
       ['manifestStatusObserved', manifestItem.status],
