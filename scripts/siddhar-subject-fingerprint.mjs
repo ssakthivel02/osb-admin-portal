@@ -46,7 +46,7 @@ function canonicalise(value) {
   if (value !== null && typeof value === 'object') {
     return Object.fromEntries(
       Object.keys(value)
-        .sort((left, right) => left.localeCompare(right))
+        .sort()
         .map((key) => [key, canonicalise(value[key])]),
     );
   }
