@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "decisionId": "SID-ED-DEC-YYYYMMDD-001",
+  "packetId": "SID-SUB-YYYYMMDD-001",
+  "manifestItemId": "SID-EV-000",
+  "finalDisposition": "HOLD_FOR_REVIEW",
+  "editorialReviewerId": "SID-REV-REPLACE1",
+  "decidedOn": "YYYY-MM-DD",
+  "manifestStatusObserved": "UNRESOLVED",
+  "packetSubmissionStatusObserved": "SUBMITTED_FOR_REVIEW",
+  "packetProposedDispositionObserved": "HOLD_FOR_REVIEW",
+  "rightsStatusObserved": "UNRESOLVED",
+  "rightsDecisionIdObserved": "UNRESOLVED",
+  "completedReviewRolesObserved": [
+    "EDITORIAL"
+  ],
+  "basis": "REPLACE_WITH_SUBSTANTIVE_EDITORIAL_BASIS",
+  "declarations": {
+    "contradictionBlockAcknowledged": true,
+    "noAutomaticManifestChange": true,
+    "noProductionApproval": true,
+    "noPublicationClaim": true
+  }
+}
